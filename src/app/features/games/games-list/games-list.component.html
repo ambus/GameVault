@@ -1,0 +1,65 @@
+<div class="list-header">
+  <input
+    pInputText
+    type="text"
+    placeholder="Szukaj gier..."
+    (input)="onSearch($any($event.target).value)"
+  />
+  <button pButton label="Dodaj grę" icon="pi pi-plus" type="button" (click)="onAdd()"></button>
+</div>
+
+<div class="table-wrapper">
+  @if (loading()) {
+    <p>Ładowanie...</p>
+  } @else {
+    <p-table
+      [value]="displayedGames()"
+      [paginator]="true"
+      [rows]="10"
+      [rowsPerPageOptions]="[10, 25, 50]"
+      [resizableColumns]="true"
+      [reorderableColumns]="true"
+      selectionMode="single"
+      (onRowSelect)="onRowClick($event.data)"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="name">
+            Nazwa
+            <p-sortIcon field="name"></p-sortIcon>
+          </th>
+          <th pSortableColumn="genre">
+            Gatunek
+            <p-sortIcon field="genre"></p-sortIcon>
+          </th>
+          <th pSortableColumn="platform">
+            Platforma
+            <p-sortIcon field="platform"></p-sortIcon>
+          </th>
+          <th>Ocena</th>
+          <th style="width: 6rem"></th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-game>
+        <tr (click)="onRowClick(game)">
+          <td>{{ game.name }}</td>
+          <td>{{ game.genre }}</td>
+          <td>{{ game.platform }}</td>
+          <td>{{ game.rating }}</td>
+          <td>
+            <button
+              pButton
+              type="button"
+              icon="pi pi-trash"
+              class="p-button-text p-button-danger"
+              (click)="onDelete(game); $event.stopPropagation()"
+            ></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  }
+</div>
+
+

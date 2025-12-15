@@ -1,0 +1,28 @@
+.app-main {
+  padding: 1rem;
+}
+
+.app-title {
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu li {
+  margin-bottom: 0.5rem;
+}
+
+.menu a {
+  text-decoration: none;
+}
+
+.menu a.active {
+  font-weight: 600;
+}
+
+

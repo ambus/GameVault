@@ -1,0 +1,11 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.field label {
+  margin-bottom: 0.25rem;
+}
+
+

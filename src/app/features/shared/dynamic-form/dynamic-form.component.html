@@ -1,0 +1,36 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  @for (field of fields(); track field.name) {
+    <div class="field">
+      <label [for]="field.name">{{ field.label }}</label>
+
+      @if (field.type === 'text') {
+        <input
+          pInputText
+          [id]="field.name"
+          [formControlName]="field.name"
+          [placeholder]="field.placeholder"
+        />
+      } @else if (field.type === 'textarea') {
+        <textarea
+          [id]="field.name"
+          [formControlName]="field.name"
+          [placeholder]="field.placeholder"
+        ></textarea>
+      } @else if (field.type === 'number') {
+        <input type="number" [formControlName]="field.name" />
+      } @else if (field.type === 'date') {
+        <input type="date" [formControlName]="field.name" />
+      } @else if (field.type === 'select') {
+        <select [formControlName]="field.name">
+          @for (opt of field.options ?? []; track opt.value) {
+            <option [ngValue]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      }
+    </div>
+  }
+
+  <button pButton type="submit" label="Zapisz" icon="pi pi-save"></button>
+</form>
+
+

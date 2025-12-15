@@ -1,59 +1,116 @@
-# GameVault
+## GameVault – Angular 21 + SSR + PWA + PrimeNG
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.3.
+Projekt to szkielet aplikacji GameVault:
 
-## Development server
+- Angular 21 (standalone, Signals, SSR + hydration)
+- PWA z `@angular/service-worker` i `ngsw-config.json`
+- PrimeNG + @primeuix/themes (layout: top nav + sidebar + content)
+- Architektura feature-based (`features/games`, `features/shared`)
+- Dynamiczne formularze generowane z JSON-schema (`fields` array)
+- Podstawowe testy (unit + e2e, szkic pod Cypress)
+- ESLint, Husky pre-commit, przykładowy pipeline CI (GitHub Actions)
 
-To start a local development server, run:
-
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Uruchomienie dev (SSR + hydration)
 
 ```bash
-ng generate component component-name
+npm install
+npm run start
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Domyślnie Angular dev-server działa na `http://localhost:4200/` z włączonym SSR/hydration.
+
+### Build produkcyjny (SSR + PWA)
 
 ```bash
-ng generate --help
+npm run build:ssr
 ```
 
-## Building
+Artefakty trafią do `dist/GameVault/` (browser + server). Service Worker (`ngsw-worker.js`) jest włączony w konfiguracji produkcyjnej (`serviceWorker: true`, `ngsw-config.json`).
 
-To build the project run:
+### Testy
+
+Unit tests (Vitest przez Angular CLI):
 
 ```bash
-ng build
+npm test
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Przykładowy test: `src/app/features/games/games.store.spec.ts`.
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+End-to-end (przykład Cypress – wymaga ręcznej instalacji `cypress`):
 
 ```bash
-ng test
+# instalacja (jeśli jeszcze nie)
+npm install --save-dev cypress
+
+# uruchomienie testów (po starcie aplikacji)
+npx cypress open
 ```
 
-## Running end-to-end tests
+Przykładowy scenariusz: `cypress/e2e/games.cy.ts` (dodawanie i wyszukiwanie gry).
 
-For end-to-end (e2e) testing, run:
+### Lint / formatowanie / pre-commit
+
+- Konfiguracja ESLint: `.eslintrc.cjs`
+- Skrypt:
 
 ```bash
-ng e2e
+npm run lint
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+- Husky pre-commit (`.husky/pre-commit`) uruchamia:
+  - `npm run lint`
+  - `npm test`
+  - `npm run build:ssr`
 
-## Additional Resources
+> Aby włączyć Husky:
+>
+> ```bash
+> npx husky install
+> ```
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+### CI (GitHub Actions)
+
+Plik `.github/workflows/ci.yml` wykonuje:
+
+1. `npm ci`
+2. `npm run lint`
+3. `npm test -- --watch=false`
+4. `npm run build:ssr`
+5. Lighthouse PWA audit (`lhci autorun`)
+
+### Deploy na Firebase (SSR + PWA) – skrót
+
+1. Zainstaluj CLI:
+
+   ```bash
+   npm install -g firebase-tools
+   firebase login
+   ```
+
+2. Zainicjalizuj projekt:
+
+   ```bash
+   firebase init hosting functions
+   ```
+
+   - `public`: ustaw na `dist/GameVault/browser`
+   - Włącz `Configure as a single-page app` (rewrite na `index.html` lub proxy do funkcji SSR)
+   - Functions: TypeScript, Node 20
+
+3. Zbuduj aplikację:
+
+   ```bash
+   npm run build:ssr
+   ```
+
+4. W funkcji Cloud Functions zaimportuj serwer SSR z `dist/GameVault/server` i wystaw jako `https` function (proxy do Express/AngularNodeAppEngine).
+
+5. Deploy:
+
+   ```bash
+   firebase deploy --only hosting,functions
+   ```
+
+6. Sprawdź PWA w Chrome DevTools (Application → Service Workers) oraz w Lighthouse (zakładka Lighthouse).
+

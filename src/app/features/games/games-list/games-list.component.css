@@ -1,0 +1,12 @@
+.list-header {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.table-wrapper {
+  width: 100%;
+}
+
+
