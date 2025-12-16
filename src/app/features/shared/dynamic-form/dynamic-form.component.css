@@ -1,11 +1,36 @@
-.field {
+.dynamic-form {
   display: flex;
   flex-direction: column;
-  margin-bottom: 1rem;
+  gap: 1.5rem;
 }
 
-.field label {
+.field-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field-label {
+  font-weight: 500;
+  color: var(--text-color);
   margin-bottom: 0.25rem;
+}
+
+.required-indicator {
+  color: var(--red-500);
+  margin-left: 0.25rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--surface-border);
+}
+
+.w-full {
+  width: 100%;
 }
 
 
