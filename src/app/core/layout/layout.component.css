@@ -50,3 +50,7 @@
   color: var(--color-light-text);
 }
 
+.app-main {
+  padding: 1rem;
+}
+

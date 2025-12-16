@@ -2,5 +2,30 @@
   <div class="navbar-left">
     <span class="app-title">GameVault</span>
   </div>
+  
+  <div class="navbar-center">
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Wyszukaj gry..."
+      aria-label="Wyszukaj gry"
+    />
+  </div>
+  
+  <div class="navbar-right">
+    <p-skeleton
+      shape="circle"
+      size="2.5rem"
+      styleClass="theme-skeleton"
+    ></p-skeleton>
+    <p-avatar
+      icon="pi pi-user"
+      size="large"
+      shape="circle"
+      (click)="onAvatarClick()"
+      styleClass="avatar-clickable"
+      aria-label="Profil użytkownika"
+    ></p-avatar>
+  </div>
 </nav>
 

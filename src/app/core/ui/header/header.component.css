@@ -9,12 +9,30 @@
   position: sticky;
   top: 0;
   z-index: 1000;
+  gap: 16px;
 }
 
 .navbar-left {
   display: flex;
   align-items: center;
   gap: 16px;
+  flex: 0 0 auto;
+}
+
+.navbar-center {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  justify-content: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
 }
 
 .app-title {
@@ -22,5 +40,42 @@
   font-weight: 400;
   color: var(--color-dark-text);
   letter-spacing: 0;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 600px;
+  height: 40px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-dark-text);
+  font-size: 14px;
+  font-family: var(--font-family-primary);
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.search-input::placeholder {
+  color: rgba(232, 234, 237, 0.6);
+}
+
+.search-input:focus {
+  outline: none;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.avatar-clickable {
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.avatar-clickable:hover {
+  opacity: 0.8;
+}
+
+.theme-skeleton {
+  flex-shrink: 0;
 }
 
