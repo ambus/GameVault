@@ -52,5 +52,7 @@
 
 .app-main {
   padding: 1rem;
+  background-color: var(--color-dark-bg);
+  min-height: calc(100vh - 64px);
 }
 

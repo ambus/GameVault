@@ -15,6 +15,8 @@ html, body {
   font-family: var(--font-family-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-dark-bg);
+  color: var(--color-dark-text);
 }
 
 app-root {
