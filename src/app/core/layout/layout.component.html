@@ -1,28 +1,18 @@
-<p-menubar>
-  <ng-template pTemplate="start">
-    <button
-      pButton
-      icon="pi pi-bars"
-      class="p-button-text"
-      type="button"
-      (click)="toggleSidebar()"
-    ></button>
-    <span class="app-title">GameVault</span>
-  </ng-template>
-</p-menubar>
+<app-header (menuToggle)="toggleSidebar()" />
 
 @if (sidebarVisible()) {
-  <aside class="sidebar" (click)="sidebarVisible.set(false)">
-    <ul class="menu" (click)="$event.stopPropagation()">
-      <li>
-        <a routerLink="/games" routerLinkActive="active">Gry</a>
-      </li>
-    </ul>
-  </aside>
+  <div class="sidebar-overlay" (click)="sidebarVisible.set(false)">
+    <aside class="sidebar" (click)="$event.stopPropagation()">
+      <ul class="menu">
+        <li>
+          <a routerLink="/games" routerLinkActive="active">Gry</a>
+        </li>
+      </ul>
+    </aside>
+  </div>
 }
 
 <main class="app-main">
   <router-outlet />
 </main>
-
 

@@ -1,6 +1,24 @@
-.app-title {
-  font-weight: 600;
-  margin-left: 0.5rem;
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100vh;
+  background-color: #ffffff;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  z-index: 999;
+  overflow-y: auto;
+  padding: 16px 0;
 }
 
 .menu {
@@ -10,15 +28,25 @@
 }
 
 .menu li {
-  margin-bottom: 0.5rem;
+  margin: 0;
 }
 
 .menu a {
+  display: block;
+  padding: 12px 24px;
   text-decoration: none;
+  color: #202124;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.menu a:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .menu a.active {
-  font-weight: 600;
+  background-color: #feefc3;
+  font-weight: 500;
+  color: #202124;
 }
-
 
