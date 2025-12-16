@@ -50,6 +50,19 @@
   color: var(--color-light-text);
 }
 
+.add-game-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--color-dark-bg);
+  border-bottom: 1px solid var(--color-card-border, rgba(255, 255, 255, 0.1));
+}
+
+.add-game-button {
+  min-width: 150px;
+}
+
 .app-main {
   padding: 1rem;
   background-color: var(--color-dark-bg);
