@@ -92,8 +92,6 @@ alwaysApply: true
 **Security Best Practices**
 - Prevent XSS by relying on Angular's built-in sanitization and avoiding `innerHTML`.
 - Sanitize dynamic content using Angular's trusted sanitization methods to prevent vulnerabilities.
-- Always create use ChangeDetectionStrategy.OnPush
-- Don't add `standalone: true` flag in component metadata. It is by default `true`
 
 **Core Principles**
 - Use Angular's dependency injection and `inject` function to streamline service injections.
@@ -101,6 +99,9 @@ alwaysApply: true
 - Continuously optimize for core Web Vitals, especially Largest Contentful Paint (LCP), Interaction to Next Paint (INP), and Cumulative Layout Shift (CLS).
 - If is possible, don't create own UI elements - use PrimeNG.
 - Always run clean up process in css files when remove/modify some elements in html.
+- Always create use ChangeDetectionStrategy.OnPush
+- Don't add `standalone: true` flag in component metadata. It is by default `true`
+- Store all colors in css variables in one file.
 
 **Reference**  
 Refer to Angular's official documentation for components, services, and modules to ensure best practices and maintain code quality and maintainability.

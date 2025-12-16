@@ -1,0 +1,19 @@
+:root {
+  /* Colors - Dark Theme */
+  --color-dark-bg: #202124;
+  --color-dark-text: #e8eaed;
+  
+  /* Colors - Light Theme */
+  --color-light-bg: #ffffff;
+  --color-light-text: #202124;
+  
+  /* Colors - Accent */
+  --color-accent-active: #feefc3;
+  
+  /* Colors - Overlay & Shadows */
+  --color-overlay: rgba(0, 0, 0, 0.5);
+  --color-shadow-light: rgba(0, 0, 0, 0.15);
+  --color-shadow-medium: rgba(0, 0, 0, 0.3);
+  --color-hover-light: rgba(0, 0, 0, 0.05);
+}
+

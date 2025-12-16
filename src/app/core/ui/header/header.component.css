@@ -3,8 +3,8 @@
   align-items: center;
   justify-content: space-between;
   height: 64px;
-  background-color: #202124;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  background-color: var(--color-dark-bg);
+  box-shadow: 0 2px 4px var(--color-shadow-medium);
   padding: 0 16px;
   position: sticky;
   top: 0;
@@ -20,7 +20,7 @@
 .app-title {
   font-size: 22px;
   font-weight: 400;
-  color: #e8eaed;
+  color: var(--color-dark-text);
   letter-spacing: 0;
 }
 
