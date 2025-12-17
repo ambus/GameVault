@@ -2,22 +2,28 @@ import { ChangeDetectionStrategy, Component, computed, inject, output, signal } 
 import { toSignal as toSignalRxjs } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
 import { AvatarModule } from 'primeng/avatar';
+import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { filter, map } from 'rxjs';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   standalone: true,
   selector: 'app-header',
-  imports: [AvatarModule, SkeletonModule],
+  imports: [AvatarModule, ButtonModule, SkeletonModule],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HeaderComponent {
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
 
   menuToggle = output<void>();
   isDarkMode = signal(true);
+
+  readonly user = this.authService.user;
+  readonly userEmail = computed(() => this.user()?.email || '');
 
   private readonly currentUrl = toSignalRxjs(
     this.router.events.pipe(
@@ -43,6 +49,10 @@ export class HeaderComponent {
 
   onAvatarClick(): void {
     // Placeholder dla obsługi kliknięcia avatara
+  }
+
+  async onLogout(): Promise<void> {
+    await this.authService.logout();
   }
 }
 

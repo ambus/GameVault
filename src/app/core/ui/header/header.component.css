@@ -85,3 +85,14 @@
   flex-shrink: 0;
 }
 
+.user-email {
+  font-size: 0.875rem;
+  color: var(--color-dark-text);
+  margin-right: 0.5rem;
+  opacity: 0.8;
+}
+
+.logout-button {
+  margin-right: 0.5rem;
+}
+

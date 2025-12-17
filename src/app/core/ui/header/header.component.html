@@ -14,11 +14,15 @@
   </div>
   
   <div class="navbar-right">
-    <p-skeleton
-      shape="circle"
-      size="2.5rem"
-      styleClass="theme-skeleton"
-    ></p-skeleton>
+    <span class="user-email">{{ userEmail() }}</span>
+    <p-button
+      label="Wyloguj"
+      icon="pi pi-sign-out"
+      severity="secondary"
+      size="small"
+      (click)="onLogout()"
+      styleClass="logout-button"
+    ></p-button>
     <p-avatar
       icon="pi pi-user"
       size="large"
