@@ -4,4 +4,11 @@
   padding: 1rem;
 }
 
+.form-cancel-action {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+
 

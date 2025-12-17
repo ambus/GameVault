@@ -6,6 +6,7 @@ import {
   signal
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ButtonModule } from 'primeng/button';
 import { GamesStore } from '../games.store';
 import { GAME_FORM_FIELDS } from '../schema/games-form.schema';
 import { DynamicFormComponent } from '../../shared/dynamic-form/dynamic-form.component';
@@ -13,7 +14,7 @@ import { DynamicFormComponent } from '../../shared/dynamic-form/dynamic-form.com
 @Component({
   standalone: true,
   selector: 'app-game-form',
-  imports: [DynamicFormComponent],
+  imports: [DynamicFormComponent, ButtonModule],
   templateUrl: './game-form.component.html',
   styleUrl: './game-form.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -43,6 +44,10 @@ export class GameFormComponent {
     const id = this.editingId();
     const game = { ...(value as any), id: id ?? '' };
     this.store.upsert(game);
+    this.router.navigate(['/games']);
+  }
+
+  onCancel(): void {
     this.router.navigate(['/games']);
   }
 }
