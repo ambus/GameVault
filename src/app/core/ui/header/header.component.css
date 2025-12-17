@@ -66,6 +66,12 @@
   border-color: rgba(255, 255, 255, 0.2);
 }
 
+.search-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
 .avatar-clickable {
   cursor: pointer;
   transition: opacity 0.2s;
