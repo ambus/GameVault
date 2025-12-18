@@ -13,7 +13,7 @@ describe('GamesStore', () => {
       name: 'Test',
       genre: 'RPG',
       platform: 'PC',
-      releaseDate: '2020-01-01',
+      purchaseDate: '2020-01-01',
       rating: 8
     }
   ];

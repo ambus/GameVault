@@ -1,10 +1,12 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   effect,
   inject,
   input,
-  output
+  output,
+  signal
 } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AutoCompleteModule } from 'primeng/autocomplete';
@@ -13,6 +15,7 @@ import { CardModule } from 'primeng/card';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
+import { RatingModule } from 'primeng/rating';
 import { SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
 import { DynamicFieldConfig } from './dynamic-form.types';
@@ -28,7 +31,8 @@ import { DynamicFieldConfig } from './dynamic-form.types';
     DatePickerModule,
     SelectModule,
     CardModule,
-    AutoCompleteModule
+    AutoCompleteModule,
+    RatingModule
   ],
   templateUrl: './dynamic-form.component.html',
   styleUrl: './dynamic-form.component.css',
@@ -36,12 +40,14 @@ import { DynamicFieldConfig } from './dynamic-form.types';
 })
 export class DynamicFormComponent {
   readonly #fb = inject(FormBuilder);
+  readonly #cdr = inject(ChangeDetectorRef);
 
   fields = input.required<DynamicFieldConfig[]>();
   initialValue = input<Record<string, unknown> | null>(null);
   submitted = output<Record<string, unknown>>();
 
   form!: FormGroup;
+  readonly ratingValues = signal<Record<string, number | null>>({});
 
   constructor() {
     // Reagowanie na zmiany fields - budowanie formularza
@@ -55,15 +61,26 @@ export class DynamicFormComponent {
       const value = this.initialValue();
       if (this.form && value) {
         const initial = { ...value };
+        const ratingUpdates: Record<string, number | null> = {};
         
         // Konwersja stringa daty na Date dla PrimeNG Calendar
         for (const field of this.fields()) {
           if (field.type === 'date' && typeof initial[field.name] === 'string' && initial[field.name]) {
             initial[field.name] = new Date(initial[field.name] as string);
           }
+          
+          // Aktualizacja wartości rating
+          if (field.type === 'rating') {
+            const ratingValue = initial[field.name];
+            ratingUpdates[field.name] = ratingValue !== null && ratingValue !== undefined ? Number(ratingValue) : null;
+          }
         }
         
         this.form.patchValue(initial);
+        
+        if (Object.keys(ratingUpdates).length > 0) {
+          this.ratingValues.update((current) => ({ ...current, ...ratingUpdates }));
+        }
       }
     });
   }
@@ -71,6 +88,7 @@ export class DynamicFormComponent {
   private buildForm(): void {
     const controls: Record<string, unknown> = {};
     const initial = this.initialValue() ?? {};
+    const ratingValues: Record<string, number | null> = {};
 
     for (const field of this.fields()) {
       let value = initial[field.name] ?? null;
@@ -81,9 +99,32 @@ export class DynamicFormComponent {
       }
       
       controls[field.name] = [value, field.validators ?? []];
+      
+      // Inicjalizacja wartości rating
+      if (field.type === 'rating') {
+        ratingValues[field.name] = value !== null && value !== undefined ? Number(value) : null;
+      }
     }
 
     this.form = this.#fb.group(controls);
+    this.ratingValues.set(ratingValues);
+
+    // Subskrypcja valueChanges dla pól rating
+    for (const field of this.fields()) {
+      if (field.type === 'rating') {
+        const control = this.form.get(field.name);
+        if (control) {
+          control.valueChanges.subscribe((value) => {
+            const ratingValue = value !== null && value !== undefined ? Number(value) : null;
+            this.ratingValues.update((current) => ({
+              ...current,
+              [field.name]: ratingValue
+            }));
+            this.#cdr.markForCheck();
+          });
+        }
+      }
+    }
   }
 
   onSubmit(): void {
@@ -139,6 +180,23 @@ export class DynamicFormComponent {
     }
 
     return 'Nieprawidłowa wartość';
+  }
+
+  getFieldValue(fieldName: string): number | null {
+    const control = this.form.get(fieldName);
+    if (!control) {
+      return null;
+    }
+    const value = control.value;
+    return value !== null && value !== undefined ? Number(value) : null;
+  }
+
+  getRatingDisplay(fieldName: string, maxStars: number = 10): string {
+    const value = this.ratingValues()[fieldName];
+    if (value === null || value === undefined) {
+      return `0/${maxStars}`;
+    }
+    return `${value}/${maxStars}`;
   }
 }
 

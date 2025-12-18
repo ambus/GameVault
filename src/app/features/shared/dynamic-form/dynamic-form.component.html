@@ -4,6 +4,9 @@
       <div class="field-wrapper">
         <label [for]="field.name" class="field-label">
           {{ field.label }}
+          @if (field.type === 'rating') {
+            <span class="rating-value">({{ getRatingDisplay(field.name, 10) }})</span>
+          }
           @if (isFieldRequired(field)) {
             <span class="required-indicator">*</span>
           }
@@ -77,6 +80,16 @@
             [class.ng-dirty]="isFieldDirty(field.name)"
             styleClass="w-full"
           ></p-select>
+          @if (isFieldInvalid(field.name) && isFieldDirty(field.name)) {
+            <small class="p-error">{{ getFieldError(field.name) }}</small>
+          }
+        } @else if (field.type === 'rating') {
+          <p-rating
+            [id]="field.name"
+            [formControlName]="field.name"
+            [stars]="10"
+            [invalid]="isFieldInvalid(field.name)"
+          ></p-rating>
           @if (isFieldInvalid(field.name) && isFieldDirty(field.name)) {
             <small class="p-error">{{ getFieldError(field.name) }}</small>
           }

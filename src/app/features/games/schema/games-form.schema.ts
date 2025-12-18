@@ -32,14 +32,14 @@ export const GAME_FORM_FIELDS: DynamicFieldConfig[] = [
     validators: [Validators.required]
   },
   {
-    name: 'releaseDate',
+    name: 'purchaseDate',
     type: 'date',
-    label: 'Data wydania',
-    validators: [Validators.required]
+    label: 'Data zakupu',
+
   },
   {
     name: 'rating',
-    type: 'number',
+    type: 'rating',
     label: 'Ocena',
     validators: [Validators.min(0), Validators.max(10)]
   },
