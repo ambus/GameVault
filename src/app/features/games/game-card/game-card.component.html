@@ -6,13 +6,75 @@
     @let gameData = game();
     @if (gameData) {
       <h3 class="game-title">{{ gameData.name }}</h3>
-      <div class="game-meta">
-        <span class="game-genre">{{ gameData.genre }}</span>
-        <span class="game-platform">{{ gameData.platform }}</span>
+      
+      <div class="game-icons">
+        <span
+          class="icon-wrapper"
+          [pTooltip]="getPlatformLabel(gameData.platform)"
+          tooltipPosition="top"
+        >
+          <i [class]="getPlatformIcon(gameData.platform)"></i>
+        </span>
+        <span
+          class="icon-wrapper"
+          [pTooltip]="getVersionLabel(gameData.version)"
+          tooltipPosition="top"
+        >
+          <i [class]="getVersionIcon(gameData.version)"></i>
+        </span>
       </div>
-      <div class="game-rating">
-        <span>⭐ {{ gameData.rating }}/10</span>
+
+      @if (gameData.coverImage) {
+        <div class="game-cover">
+          <img
+            [src]="getImageUrl(gameData.coverImage)"
+            [alt]="gameData.name"
+            (error)="onImageError($event)"
+          />
+        </div>
+      }
+
+      <div class="game-info">
+        @if (gameData.status) {
+          <div class="info-row">
+            <span class="info-label">Status:</span>
+            <span class="info-value">{{ getStatusLabel(gameData.status) }}</span>
+          </div>
+        }
+
+        @if (gameData.purchaseDate) {
+          <div class="info-row">
+            <span class="info-label">Data zakupu:</span>
+            <span class="info-value">{{ formatDate(gameData.purchaseDate) }}</span>
+          </div>
+        }
+
+        @if (gameData.rating !== null && gameData.rating !== undefined) {
+          <div class="info-row">
+            <span class="info-label">Ocena:</span>
+            <span class="info-value">⭐ {{ gameData.rating }}/10</span>
+          </div>
+        }
+
+        @if (gameData.isBorrowed) {
+          <div class="info-row">
+            <span class="info-label">Pożyczona:</span>
+            <span class="info-value">
+              @if (gameData.borrowDate) {
+                {{ formatDate(gameData.borrowDate) }}
+              } @else {
+                Tak
+              }
+            </span>
+          </div>
+        }
       </div>
+
+        <div class="game-tags">
+          @for (tag of getTags(gameData.tags); track tag) {
+            <span class="tag">{{ tag }}</span>
+          }
+        </div>
     } @else {
       <p-skeleton width="100%" height="1.5rem" class="mb-2"></p-skeleton>
       <p-skeleton width="60%" height="1rem" class="mb-2"></p-skeleton>
