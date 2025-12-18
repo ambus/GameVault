@@ -296,7 +296,7 @@ export class DynamicFormComponent {
     img.style.display = 'none';
   }
 
-  onFormKeyDown(event: KeyboardEvent): void {
+  onFormKeyDown(event: Event): void {
     // Jeśli Enter został naciśnięty w polu tags, zapobiegaj submitowi formularza
     const target = event.target as HTMLElement;
     if (target && target.closest('p-autocomplete')) {
