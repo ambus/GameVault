@@ -1,6 +1,6 @@
 import { ValidatorFn } from '@angular/forms';
 
-export type FieldType = 'text' | 'textarea' | 'number' | 'date' | 'select' | 'rating' | 'checkbox' | 'image';
+export type FieldType = 'text' | 'textarea' | 'number' | 'date' | 'select' | 'rating' | 'checkbox' | 'image' | 'tags';
 
 export interface DynamicFieldOption {
   label: string;

@@ -116,6 +116,12 @@ export const GAME_FORM_FIELDS: DynamicFieldConfig[] = [
     placeholder: 'Dodaj komentarz do gry...'
   },
   {
+    name: 'tags',
+    type: 'tags',
+    label: 'Tagi',
+    placeholder: 'Wpisz tag i naciśnij Enter, Tab lub przecinek'
+  },
+  {
     name: 'rating',
     type: 'rating',
     label: 'Ocena',

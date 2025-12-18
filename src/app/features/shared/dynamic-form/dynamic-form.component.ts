@@ -114,6 +114,11 @@ export class DynamicFormComponent {
         value = false;
       } else if (field.type === 'checkbox' && value === null) {
         value = false;
+      } else if (field.type === 'tags' && (value === undefined || value === null)) {
+        value = [];
+      } else if (field.type === 'tags' && typeof value === 'string') {
+        // Konwersja stringa na tablicę (jeśli zapisane jako string)
+        value = value.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
       } else if (value === undefined) {
         value = null;
       }
@@ -177,6 +182,26 @@ export class DynamicFormComponent {
       if (field.type === 'date' && formValue[field.name] instanceof Date) {
         const date = formValue[field.name] as Date;
         formValue[field.name] = date.toISOString().split('T')[0];
+      }
+      
+      // Konwersja tablicy tagów na string (opcjonalnie, można też zostawić jako tablicę)
+      if (field.type === 'tags' && Array.isArray(formValue[field.name])) {
+        const tags = formValue[field.name] as any[];
+        const tagStrings = tags.map(tag => typeof tag === 'string' ? tag : String(tag));
+        
+        // Aktualizuj listę wszystkich tagów
+        this.allTags.update(current => {
+          const newTags = [...current];
+          tagStrings.forEach(tag => {
+            if (!newTags.includes(tag)) {
+              newTags.push(tag);
+            }
+          });
+          return newTags;
+        });
+        
+        // Można zapisać jako tablicę lub string - zostawiamy jako tablicę
+        // formValue[field.name] = tagStrings.join(',');
       }
     }
     
@@ -269,6 +294,68 @@ export class DynamicFormComponent {
   onImageError(event: Event): void {
     const img = event.target as HTMLImageElement;
     img.style.display = 'none';
+  }
+
+  onFormKeyDown(event: KeyboardEvent): void {
+    // Jeśli Enter został naciśnięty w polu tags, zapobiegaj submitowi formularza
+    const target = event.target as HTMLElement;
+    if (target && target.closest('p-autocomplete')) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }
+
+  onTagInputKeydown(event: KeyboardEvent, fieldName: string): void {
+    // Jeśli naciśnięto Enter, dodaj tag i zapobiegaj submitowi formularza
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      const control = this.form.get(fieldName);
+      if (!control) {
+        return;
+      }
+
+      const input = event.target as HTMLInputElement;
+      const inputValue = input.value?.trim();
+      
+      if (inputValue) {
+        const currentTags = (control.value as string[]) || [];
+        if (!currentTags.includes(inputValue)) {
+          control.setValue([...currentTags, inputValue]);
+          control.markAsDirty();
+          input.value = '';
+        }
+      }
+    }
+  }
+
+  private readonly tagSuggestions = signal<Record<string, string[]>>({});
+  private readonly allTags = signal<string[]>([]);
+
+  getTagSuggestions(fieldName: string): string[] {
+    return this.tagSuggestions()[fieldName] || [];
+  }
+
+  onTagSearch(event: any, fieldName: string): void {
+    const query = event.query?.toLowerCase() || '';
+    const currentTags = this.form.get(fieldName)?.value || [];
+    const existingTags = Array.isArray(currentTags) ? currentTags.map((t: any) => 
+      typeof t === 'string' ? t.toLowerCase() : String(t).toLowerCase()
+    ) : [];
+
+    // Filtruj istniejące tagi i dodaj sugestie
+    const suggestions = this.allTags()
+      .filter(tag => 
+        tag.toLowerCase().includes(query) && 
+        !existingTags.includes(tag.toLowerCase())
+      )
+      .slice(0, 10);
+
+    this.tagSuggestions.update(current => ({
+      ...current,
+      [fieldName]: suggestions
+    }));
   }
 }
 

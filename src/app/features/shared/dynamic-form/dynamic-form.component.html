@@ -1,5 +1,5 @@
 <p-card>
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="dynamic-form">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" (keydown.enter)="onFormKeyDown($event)" class="dynamic-form">
     @for (field of fields(); track field.name) {
       @if (isFieldVisible(field)) {
         <div class="field-wrapper">
@@ -131,6 +131,26 @@
                 class="preview-image"
               />
             </div>
+          }
+        } @else if (field.type === 'tags') {
+          <p-autocomplete
+            [id]="field.name"
+            [formControlName]="field.name"
+            [placeholder]="field.placeholder || 'Wpisz tag i naciśnij Enter lub Tab'"
+            [multiple]="true"
+            [typeahead]="false"
+            [addOnBlur]="true"
+            [addOnTab]="true"
+            separator=","
+            [suggestions]="getTagSuggestions(field.name)"
+            (completeMethod)="onTagSearch($event, field.name)"
+            (onInputKeydown)="onTagInputKeydown($event, field.name)"
+            [class.ng-invalid]="isFieldInvalid(field.name)"
+            [class.ng-dirty]="isFieldDirty(field.name)"
+            styleClass="w-full"
+          ></p-autocomplete>
+          @if (isFieldInvalid(field.name) && isFieldDirty(field.name)) {
+            <small class="p-error">{{ getFieldError(field.name) }}</small>
           }
         }
       </div>
