@@ -2,14 +2,15 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   signal
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { DynamicFormComponent } from '../../shared/dynamic-form/dynamic-form.component';
 import { GamesStore } from '../games.store';
 import { GAME_FORM_FIELDS } from '../schema/games-form.schema';
-import { DynamicFormComponent } from '../../shared/dynamic-form/dynamic-form.component';
 
 @Component({
   standalone: true,
@@ -28,8 +29,12 @@ export class GameFormComponent {
   readonly editingId = signal<string | null>(null);
 
   readonly initialValue = computed(() => {
-    const game = this.store.selectedGame();
-    return game ? { ...game } : {};
+    const id = this.editingId();
+    if (id) {
+      const game = this.store.selectedGame();
+      return game ? { ...game } : {};
+    }
+    return {};
   });
 
   constructor() {
@@ -37,12 +42,23 @@ export class GameFormComponent {
     if (id) {
       this.editingId.set(id);
       this.store.select(id);
+    } else {
+      // Wyczyść selectedId gdy dodajemy nową grę
+      this.store.select(null);
     }
+
+    // Reaguj na zmiany editingId i czyszcz selectedId gdy nie ma ID
+    effect(() => {
+      const currentId = this.editingId();
+      if (!currentId) {
+        this.store.select(null);
+      }
+    });
   }
 
   onSubmitted(value: Record<string, unknown>): void {
     const id = this.editingId();
-    const game = { ...(value as any), id: id ?? '' };
+    const game = id ? { ...(value as any), id } : (value as any);
     this.store.upsert(game);
     this.router.navigate(['/games']);
   }

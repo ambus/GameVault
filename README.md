@@ -234,6 +234,127 @@ npm run start
 - Uruchom `npm install` ponownie
 - Sprawdź, czy `@angular/fire` jest w `package.json`
 
+## Konfiguracja Firestore Database
+
+Aplikacja wykorzystuje Google Firestore Database do przechowywania danych o grach. Poniżej znajduje się krok po kroku instrukcja konfiguracji bazy danych.
+
+### Krok 1: Utworzenie bazy danych Firestore
+
+1. W Firebase Console przejdź do **Firestore Database** (w menu po lewej stronie)
+2. Kliknij **"Create database"** (lub **"Utwórz bazę danych"**)
+3. Wybierz tryb:
+   - **Production mode** (tryb produkcyjny) - wymaga skonfigurowania reguł bezpieczeństwa
+   - **Test mode** (tryb testowy) - dostęp otwarty na 30 dni (tylko do testów)
+4. Wybierz lokalizację bazy danych (np. `europe-west` dla Europy)
+5. Kliknij **"Enable"** (lub **"Włącz"**)
+
+> **Uwaga:** Dla środowiska produkcyjnego zawsze używaj trybu produkcyjnego z odpowiednimi regułami bezpieczeństwa.
+
+### Krok 2: Konfiguracja reguł bezpieczeństwa
+
+1. W Firebase Console przejdź do **Firestore Database** → **Rules**
+2. Dla środowiska deweloperskiego możesz użyć następujących reguł (tylko do testów):
+
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Tylko zalogowani użytkownicy mogą czytać i pisać
+    match /games/{gameId} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+```
+
+3. Kliknij **"Publish"** (lub **"Opublikuj"**), aby zapisać reguły
+
+> **Uwaga:** Powyższe reguły pozwalają każdemu zalogowanemu użytkownikowi na pełny dostęp do kolekcji `games`. W środowisku produkcyjnym rozważ bardziej szczegółowe reguły, np. ograniczenie dostępu tylko do własnych danych użytkownika.
+
+### Krok 3: Utworzenie indeksów (opcjonalne)
+
+Jeśli planujesz używać zaawansowanych zapytań (np. sortowanie po wielu polach), możesz potrzebować utworzyć indeksy:
+
+1. W Firebase Console przejdź do **Firestore Database** → **Indexes**
+2. Jeśli aplikacja wyświetli błąd o brakującym indeksie, kliknij link w komunikacie błędu
+3. Firebase automatycznie utworzy indeks dla Ciebie
+
+Dla podstawowej funkcjonalności (sortowanie po polu `name`) indeks nie jest wymagany.
+
+### Krok 4: Struktura danych
+
+Aplikacja przechowuje dane w kolekcji `games` z następującą strukturą:
+
+- **Kolekcja:** `games`
+- **Dokumenty:** Każdy dokument reprezentuje jedną grę
+- **Pola:** Struktura jest elastyczna i może zawierać dowolne pola zdefiniowane w formularzu:
+  - `name` (string) - nazwa gry
+  - `genre` (string) - gatunek
+  - `platform` (string) - platforma
+  - `releaseDate` (string) - data wydania
+  - `rating` (number) - ocena
+  - `description` (string) - opis
+  - Inne pola dodane dynamicznie przez formularz
+
+### Krok 5: Testowanie połączenia
+
+1. Uruchom aplikację:
+
+```bash
+npm run start
+```
+
+2. Zaloguj się do aplikacji
+3. Przejdź do sekcji gier (`/games`)
+4. Dodaj nową grę używając formularza
+5. Sprawdź w Firebase Console → **Firestore Database** → **Data**, czy dokument został utworzony w kolekcji `games`
+
+### Rozwiązywanie problemów
+
+**Problem: "Missing or insufficient permissions"**
+- Sprawdź, czy użytkownik jest zalogowany
+- Sprawdź reguły bezpieczeństwa w Firebase Console → **Firestore Database** → **Rules**
+- Upewnij się, że reguły pozwalają na operacje dla zalogowanych użytkowników
+
+**Problem: "The query requires an index"**
+- Kliknij link w komunikacie błędu, aby automatycznie utworzyć wymagany indeks
+- Alternatywnie przejdź do **Firestore Database** → **Indexes** i utwórz indeks ręcznie
+
+**Problem: Dane nie są zapisywane**
+- Sprawdź konsolę przeglądarki pod kątem błędów
+- Sprawdź, czy Firestore jest poprawnie skonfigurowane w `app.config.ts`
+- Upewnij się, że użytkownik jest zalogowany
+
+**Problem: "Firestore is not initialized"**
+- Sprawdź, czy `provideFirestore()` jest dodane do `app.config.ts`
+- Sprawdź, czy `@angular/fire` jest zainstalowane: `npm install @angular/fire`
+
+### Reguły bezpieczeństwa dla środowiska produkcyjnego
+
+Dla środowiska produkcyjnego rozważ bardziej szczegółowe reguły bezpieczeństwa:
+
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /games/{gameId} {
+      // Tylko zalogowani użytkownicy mogą czytać
+      allow read: if request.auth != null;
+      
+      // Tylko zalogowani użytkownicy mogą tworzyć
+      allow create: if request.auth != null 
+                    && request.resource.data.keys().hasAll(['name', 'genre', 'platform']);
+      
+      // Tylko zalogowani użytkownicy mogą aktualizować
+      allow update: if request.auth != null;
+      
+      // Tylko zalogowani użytkownicy mogą usuwać
+      allow delete: if request.auth != null;
+    }
+  }
+}
+```
+
 ### Dodatkowe ustawienia (opcjonalne)
 
 #### Włączenie innych metod logowania

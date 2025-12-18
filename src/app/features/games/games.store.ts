@@ -21,13 +21,18 @@ export class GamesStore {
     const q = this.query().toLowerCase();
     const { genre, platform } = this.filters();
     return this.games().filter((g) => {
+      const name = String(g['name'] ?? '').toLowerCase();
+      const description = String(g['description'] ?? '').toLowerCase();
+      const gameGenre = String(g['genre'] ?? '').toLowerCase();
+      const gamePlatform = String(g['platform'] ?? '');
+      
       const matchesText =
         !q ||
-        g.name.toLowerCase().includes(q) ||
-        g.description?.toLowerCase().includes(q) ||
-        g.genre.toLowerCase().includes(q);
-      const matchesGenre = !genre || g.genre === genre;
-      const matchesPlatform = !platform || g.platform === platform;
+        name.includes(q) ||
+        description.includes(q) ||
+        gameGenre.includes(q);
+      const matchesGenre = !genre || gameGenre === genre.toLowerCase();
+      const matchesPlatform = !platform || gamePlatform === platform;
       return matchesText && matchesGenre && matchesPlatform;
     });
   });
@@ -42,9 +47,11 @@ export class GamesStore {
 
   loadGames(): void {
     this.loading.set(true);
-    this.api.list().subscribe({
-      next: (games) => this.games.set(games),
-      complete: () => this.loading.set(false)
+    this.api.list().then((games) => {
+      return this.games.set(games);
+    })
+    .finally(() => {
+      return this.loading.set(false);
     });
   }
 
@@ -62,9 +69,11 @@ export class GamesStore {
 
   upsert(game: Game): void {
     if (game.id) {
-      this.api.update(game.id, game).subscribe(() => this.loadGames());
+      const { id, ...gameData } = game;
+      this.api.update(id, gameData).subscribe(() => this.loadGames());
     } else {
-      this.api.create(game).subscribe(() => this.loadGames());
+      const { id, ...gameData } = game;
+      this.api.create(gameData).subscribe(() => this.loadGames());
     }
   }
 

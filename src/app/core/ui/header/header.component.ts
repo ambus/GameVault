@@ -47,10 +47,6 @@ export class HeaderComponent {
     this.isDarkMode.update((value) => !value);
   }
 
-  onAvatarClick(): void {
-    // Placeholder dla obsługi kliknięcia avatara
-  }
-
   async onLogout(): Promise<void> {
     await this.authService.logout();
   }

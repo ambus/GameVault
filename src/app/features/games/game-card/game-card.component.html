@@ -3,7 +3,8 @@
   (click)="onCardClick()"
 >
   <div class="game-card-content">
-    @if (game(); as gameData) {
+    @let gameData = game();
+    @if (gameData) {
       <h3 class="game-title">{{ gameData.name }}</h3>
       <div class="game-meta">
         <span class="game-genre">{{ gameData.genre }}</span>
