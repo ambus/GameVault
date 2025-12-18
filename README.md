@@ -1,5 +1,7 @@
 ## GameVault – Angular 21 + SSR + PWA + PrimeNG + Firebase Auth
 
+## Aplikacja w 99% wygenerowana przez AI
+
 Projekt to szkielet aplikacji GameVault:
 
 - Angular 21 (standalone, Signals, SSR + hydration)

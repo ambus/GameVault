@@ -1,16 +1,19 @@
 <p-card>
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="dynamic-form">
     @for (field of fields(); track field.name) {
-      <div class="field-wrapper">
-        <label [for]="field.name" class="field-label">
-          {{ field.label }}
-          @if (field.type === 'rating') {
-            <span class="rating-value">({{ getRatingDisplay(field.name, 10) }})</span>
-          }
-          @if (isFieldRequired(field)) {
-            <span class="required-indicator">*</span>
-          }
-        </label>
+      @if (isFieldVisible(field)) {
+        <div class="field-wrapper">
+        @if (field.type !== 'checkbox') {
+          <label [for]="field.name" class="field-label">
+            {{ field.label }}
+            @if (field.type === 'rating') {
+              <span class="rating-value">({{ getRatingDisplay(field.name, 10) }})</span>
+            }
+            @if (isFieldRequired(field)) {
+              <span class="required-indicator">*</span>
+            }
+          </label>
+        }
 
         @if (field.type === 'text') {
           <input
@@ -93,8 +96,45 @@
           @if (isFieldInvalid(field.name) && isFieldDirty(field.name)) {
             <small class="p-error">{{ getFieldError(field.name) }}</small>
           }
+        } @else if (field.type === 'checkbox') {
+          <div class="checkbox-wrapper">
+            <p-checkbox
+              [id]="field.name"
+              [formControlName]="field.name"
+              [binary]="true"
+              [inputId]="field.name"
+            ></p-checkbox>
+            <label [for]="field.name" class="checkbox-label">{{ field.label }}</label>
+          </div>
+          @if (isFieldInvalid(field.name) && isFieldDirty(field.name)) {
+            <small class="p-error">{{ getFieldError(field.name) }}</small>
+          }
+        } @else if (field.type === 'image') {
+          <input
+            pInputText
+            [id]="field.name"
+            [formControlName]="field.name"
+            [placeholder]="field.placeholder || 'Wklej URL lub Base64'"
+            [class.ng-invalid]="isFieldInvalid(field.name)"
+            [class.ng-dirty]="isFieldDirty(field.name)"
+            class="w-full"
+          />
+          @if (isFieldInvalid(field.name) && isFieldDirty(field.name)) {
+            <small class="p-error">{{ getFieldError(field.name) }}</small>
+          }
+          @if (getImageUrl(field.name)) {
+            <div class="image-preview">
+              <img
+                [src]="getImageUrl(field.name)"
+                [alt]="field.label"
+                (error)="onImageError($event)"
+                class="preview-image"
+              />
+            </div>
+          }
         }
       </div>
+      }
     }
 
     <div class="form-actions">

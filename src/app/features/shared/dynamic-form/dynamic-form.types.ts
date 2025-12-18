@@ -1,6 +1,6 @@
 import { ValidatorFn } from '@angular/forms';
 
-export type FieldType = 'text' | 'textarea' | 'number' | 'date' | 'select' | 'rating';
+export type FieldType = 'text' | 'textarea' | 'number' | 'date' | 'select' | 'rating' | 'checkbox' | 'image';
 
 export interface DynamicFieldOption {
   label: string;
@@ -14,6 +14,10 @@ export interface DynamicFieldConfig {
   placeholder?: string;
   options?: DynamicFieldOption[];
   validators?: ValidatorFn[];
+  showWhen?: {
+    field: string;
+    value: boolean | string | number;
+  };
 }
 
 
