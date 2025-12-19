@@ -20,16 +20,37 @@ async function getServerModule() {
     return serverModuleCache;
   }
 
-  // The path is relative to the functions/lib directory after build
-  // First try the copied location in functions/dist, then fallback to root dist
-  const serverPath = fs.existsSync(path.join(__dirname, '..', 'dist', 'GameVault', 'server', 'server.mjs'))
-    ? path.join(__dirname, '..', 'dist', 'GameVault', 'server', 'server.mjs')
-    : path.join(__dirname, '..', '..', '..', 'dist', 'GameVault', 'server', 'server.mjs');
+  // In Cloud Functions, __dirname points to /workspace/lib
+  // Try multiple possible locations
+  const possiblePaths = [
+    path.join(__dirname, '..', 'dist', 'GameVault', 'server', 'server.mjs'), // functions/dist/GameVault/server/server.mjs
+    path.join(process.cwd(), 'dist', 'GameVault', 'server', 'server.mjs'), // /workspace/dist/GameVault/server/server.mjs
+    path.join(__dirname, '..', '..', 'dist', 'GameVault', 'server', 'server.mjs'), // Alternative relative path
+  ];
+
+  let serverPath: string | null = null;
   
-  // Check if file exists
-  if (!fs.existsSync(serverPath)) {
-    throw new Error(`Server file not found at: ${serverPath}`);
+  // Find the first existing path
+  for (const testPath of possiblePaths) {
+    if (fs.existsSync(testPath)) {
+      serverPath = testPath;
+      break;
+    }
   }
+  
+  // If not found, log debug info and throw error
+  if (!serverPath) {
+    const debugInfo = {
+      __dirname,
+      cwd: process.cwd(),
+      possiblePaths,
+      checkedPaths: possiblePaths.map(p => ({ path: p, exists: fs.existsSync(p) }))
+    };
+    console.error('Server file not found. Debug info:', JSON.stringify(debugInfo, null, 2));
+    throw new Error(`Server file not found. Checked paths: ${possiblePaths.join(', ')}`);
+  }
+
+  console.log(`Loading server module from: ${serverPath}`);
 
   // Convert to file URL for ES module import
   const serverUrl = url.pathToFileURL(serverPath).href;
