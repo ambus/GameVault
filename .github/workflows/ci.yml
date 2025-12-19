@@ -73,13 +73,14 @@ jobs:
           npm run build
 
       - name: Authenticate Firebase
+        env:
+          SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
-          SERVICE_ACCOUNT="${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
-          FIREBASE_TOKEN="${{ secrets.FIREBASE_TOKEN }}"
-
           if [ -n "${SERVICE_ACCOUNT}" ]; then
             # Użyj Service Account (Opcja 1)
-            echo "${SERVICE_ACCOUNT}" > $HOME/firebase-service-account.json
+            # Zapisujemy JSON do pliku używając printf aby uniknąć interpretacji przez bash
+            printf '%s\n' "${SERVICE_ACCOUNT}" > $HOME/firebase-service-account.json
             export GOOGLE_APPLICATION_CREDENTIALS=$HOME/firebase-service-account.json
             firebase use game-vault-66ad9
           elif [ -n "${FIREBASE_TOKEN}" ]; then
