@@ -504,3 +504,26 @@ firebase deploy
 - Statyczne pliki (JS, CSS, obrazy) są serwowane bezpośrednio z Firebase Hosting
 - Service Worker (PWA) działa w trybie offline dla statycznych zasobów
 
+### Rozwiązywanie problemu "Your client does not have permission"
+
+Jeśli po wdrożeniu widzisz błąd **"Your client does not have permission to get URL / from this server"**, oznacza to, że Cloud Function nie ma uprawnień publicznych. 
+
+**Rozwiązanie automatyczne (zalecane):**
+Funkcja `ssr` w `functions/index.ts` ma już skonfigurowane `invoker: 'public'`. Po ponownym wdrożeniu uprawnienia powinny być automatycznie nadane.
+
+**Rozwiązanie ręczne (jeśli automatyczne nie działa):**
+
+1. Przejdź do [Google Cloud Console](https://console.cloud.google.com/)
+2. Wybierz projekt `game-vault-66ad9`
+3. W menu po lewej stronie przejdź do **Cloud Functions**
+4. Znajdź funkcję `ssr` (powinna być w regionie `europe-west1`)
+5. Kliknij na nazwę funkcji
+6. Przejdź do zakładki **PERMISSIONS**
+7. Kliknij **ADD PRINCIPAL**
+8. W polu **New principals** wpisz: `allUsers`
+9. W polu **Select a role** wybierz: **Cloud Functions Invoker**
+10. Kliknij **SAVE**
+11. W oknie dialogowym potwierdź, klikając **ALLOW PUBLIC ACCESS**
+
+Po nadaniu uprawnień aplikacja powinna być dostępna publicznie.
+

@@ -1,8 +1,8 @@
-import { onRequest } from 'firebase-functions/v2/https';
 import { setGlobalOptions } from 'firebase-functions/v2';
+import { onRequest } from 'firebase-functions/v2/https';
+import * as fs from 'fs';
 import * as path from 'path';
 import * as url from 'url';
-import * as fs from 'fs';
 
 // Set global options for all functions
 setGlobalOptions({
@@ -45,7 +45,8 @@ export const ssr = onRequest(
     maxInstances: 10,
     memory: '512MiB',
     timeoutSeconds: 60,
-    region: 'europe-west1'
+    region: 'europe-west1',
+    invoker: 'public' // Allow public access (unauthenticated requests)
   },
   async (req, res) => {
     try {
