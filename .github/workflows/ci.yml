@@ -77,13 +77,13 @@ jobs:
           SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
-          if [ -n "${SERVICE_ACCOUNT}" ]; then
+          if [ -n "$SERVICE_ACCOUNT" ]; then
             # Użyj Service Account (Opcja 1)
-            # Zapisujemy JSON do pliku używając printf aby uniknąć interpretacji przez bash
-            printf '%s\n' "${SERVICE_ACCOUNT}" > $HOME/firebase-service-account.json
+            # Dekodujemy base64 do pliku JSON (Service Account powinien być zakodowany w base64)
+            echo "$SERVICE_ACCOUNT" | base64 -d > $HOME/firebase-service-account.json
             export GOOGLE_APPLICATION_CREDENTIALS=$HOME/firebase-service-account.json
             firebase use game-vault-66ad9
-          elif [ -n "${FIREBASE_TOKEN}" ]; then
+          elif [ -n "$FIREBASE_TOKEN" ]; then
             # Użyj Token (Opcja 2)
             firebase use game-vault-66ad9
           else

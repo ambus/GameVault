@@ -395,14 +395,29 @@ Aby umożliwić automatyczne wdrażanie, musisz skonfigurować sekrety w GitHub.
    - W oknie dialogowym kliknij **Generate Key**
    - Plik JSON zostanie automatycznie pobrany (np. `game-vault-66ad9-xxxxx.json`)
 
-2. **Dodaj sekret do GitHub:**
+2. **Zakoduj JSON w base64:**
+   - Otwórz pobrany plik JSON (np. `game-vault-66ad9-xxxxx.json`)
+   - Skopiuj **całą jego zawartość** (od `{` do `}`)
+   - Zakoduj zawartość w base64 używając jednej z poniższych metod:
+   
+   **Na macOS/Linux:**
+   ```bash
+   cat game-vault-66ad9-xxxxx.json | base64 | pbcopy  # macOS
+   # lub
+   cat game-vault-66ad9-xxxxx.json | base64 | xclip -selection clipboard  # Linux
+   ```
+   
+   **Alternatywnie online:**
+   - Użyj narzędzia online do kodowania base64 (np. https://www.base64encode.org/)
+   - Wklej zawartość JSON i skopiuj zakodowany wynik
+
+3. **Dodaj sekret do GitHub:**
    - Przejdź do swojego repozytorium na GitHub
    - Kliknij **Settings** (na górze repozytorium)
    - W menu po lewej stronie kliknij **Secrets and variables** → **Actions**
    - Kliknij **New repository secret**
    - **Name**: `FIREBASE_SERVICE_ACCOUNT`
-   - **Secret**: Otwórz pobrany plik JSON i skopiuj **całą jego zawartość** (od `{` do `}`)
-   - Wklej całą zawartość JSON do pola "Secret"
+   - **Secret**: Wklej **zakodowany w base64** ciąg znaków (nie surowy JSON!)
    - Kliknij **Add secret**
 
 #### Opcja 2: FIREBASE_TOKEN (Alternatywa)
@@ -432,7 +447,7 @@ Aby umożliwić automatyczne wdrażanie, musisz skonfigurować sekrety w GitHub.
 - **FIREBASE_SERVICE_ACCOUNT** (Opcja 1) - Zalecana, bardziej bezpieczna, daje pełny dostęp do projektu
 - **FIREBASE_TOKEN** (Opcja 2) - Prostsza, ale token wygasa po pewnym czasie i wymaga odnowienia
 
-**Uwaga:** W pliku `.github/workflows/ci.yml` używamy `FIREBASE_TOKEN`. Jeśli wybierzesz Opcję 1, musisz zaktualizować workflow, aby używał `FIREBASE_SERVICE_ACCOUNT` zamiast tokenu.
+**Uwaga:** W pliku `.github/workflows/ci.yml` workflow automatycznie wykrywa, który sekret jest ustawiony (`FIREBASE_SERVICE_ACCOUNT` lub `FIREBASE_TOKEN`) i używa odpowiedniej metody uwierzytelniania. **Pamiętaj, że `FIREBASE_SERVICE_ACCOUNT` musi być zakodowany w base64!**
 
 ### Struktura wdrożenia
 
