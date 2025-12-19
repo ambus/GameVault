@@ -186,7 +186,7 @@ export class DynamicFormComponent {
       
       // Konwersja tablicy tagów na string (opcjonalnie, można też zostawić jako tablicę)
       if (field.type === 'tags' && Array.isArray(formValue[field.name])) {
-        const tags = formValue[field.name] as any[];
+        const tags = formValue[field.name] as unknown[];
         const tagStrings = tags.map(tag => typeof tag === 'string' ? tag : String(tag));
         
         // Aktualizuj listę wszystkich tagów
@@ -337,10 +337,10 @@ export class DynamicFormComponent {
     return this.tagSuggestions()[fieldName] || [];
   }
 
-  onTagSearch(event: any, fieldName: string): void {
+  onTagSearch(event: { query: string }, fieldName: string): void {
     const query = event.query?.toLowerCase() || '';
     const currentTags = this.form.get(fieldName)?.value || [];
-    const existingTags = Array.isArray(currentTags) ? currentTags.map((t: any) => 
+    const existingTags = Array.isArray(currentTags) ? currentTags.map((t: unknown) => 
       typeof t === 'string' ? t.toLowerCase() : String(t).toLowerCase()
     ) : [];
 

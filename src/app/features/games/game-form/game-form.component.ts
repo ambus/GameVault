@@ -10,6 +10,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DynamicFormComponent } from '../../shared/dynamic-form/dynamic-form.component';
 import { GamesStore } from '../games.store';
+import { Game } from '../games.types';
 import { GAME_FORM_FIELDS } from '../schema/games-form.schema';
 
 @Component({
@@ -58,7 +59,10 @@ export class GameFormComponent {
 
   onSubmitted(value: Record<string, unknown>): void {
     const id = this.editingId();
-    const game = id ? { ...(value as any), id } : (value as any);
+    const game: Game = {
+      ...value,
+      id: id || ''
+    } as Game;
     this.store.upsert(game);
     this.router.navigate(['/games']);
   }

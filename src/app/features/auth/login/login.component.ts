@@ -5,12 +5,12 @@ import {
   signal
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
-import { PasswordModule } from 'primeng/password';
 import { MessageModule } from 'primeng/message';
+import { PasswordModule } from 'primeng/password';
 import { AuthService } from '../../../core/auth/auth.service';
 
 @Component({
@@ -56,11 +56,12 @@ export class LoginComponent {
 
       const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/games';
       this.router.navigate([returnUrl]);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const firebaseError = error as { code?: string; message?: string };
       this.errorMessage.set(
-        error.code === 'auth/invalid-credential'
+        firebaseError.code === 'auth/invalid-credential'
           ? 'Nieprawidłowy email lub hasło'
-          : error.message || 'Wystąpił błąd podczas logowania'
+          : firebaseError.message || 'Wystąpił błąd podczas logowania'
       );
     } finally {
       this.loading.set(false);

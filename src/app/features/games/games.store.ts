@@ -72,6 +72,7 @@ export class GamesStore {
       const { id, ...gameData } = game;
       this.api.update(id, gameData).subscribe(() => this.loadGames());
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { id, ...gameData } = game;
       this.api.create(gameData).subscribe(() => this.loadGames());
     }

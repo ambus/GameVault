@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { GamesStore } from './games.store';
 import { GamesService } from './games.service';
+import { GamesStore } from './games.store';
 import { Game } from './games.types';
 
 describe('GamesStore', () => {
@@ -25,7 +25,7 @@ describe('GamesStore', () => {
         {
           provide: GamesService,
           useValue: {
-            list: () => of(mockGames),
+            list: () => Promise.resolve(mockGames),
             create: () => of(true),
             update: () => of(true),
             delete: () => of(true)
@@ -37,8 +37,10 @@ describe('GamesStore', () => {
     store = TestBed.inject(GamesStore);
   });
 
-  it('powinien załadować listę gier', () => {
+  it('powinien załadować listę gier', async () => {
     store.loadGames();
+    // Czekamy na zakończenie Promise
+    await new Promise(resolve => setTimeout(resolve, 0));
     expect(store.games().length).toBe(1);
     expect(store.games()[0].name).toBe('Test');
   });

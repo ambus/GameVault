@@ -23,20 +23,12 @@ export class AuthService {
   }
 
   async login(email: string, password: string): Promise<void> {
-    try {
-      await signInWithEmailAndPassword(this.auth, email, password);
-    } catch (error) {
-      throw error;
-    }
+    await signInWithEmailAndPassword(this.auth, email, password);
   }
 
   async logout(): Promise<void> {
-    try {
-      await signOut(this.auth);
-      this.router.navigate(['/login']);
-    } catch (error) {
-      throw error;
-    }
+    await signOut(this.auth);
+    this.router.navigate(['/login']);
   }
 }
 
