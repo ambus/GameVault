@@ -411,7 +411,23 @@ Aby umożliwić automatyczne wdrażanie, musisz skonfigurować sekrety w GitHub.
    - Użyj narzędzia online do kodowania base64 (np. https://www.base64encode.org/)
    - Wklej zawartość JSON i skopiuj zakodowany wynik
 
-3. **Dodaj sekret do GitHub:**
+3. **Nadaj uprawnienia Service Account (WAŻNE!):**
+   - Przejdź do [Google Cloud Console](https://console.cloud.google.com/)
+   - Wybierz projekt `game-vault-66ad9`
+   - W menu po lewej stronie przejdź do **IAM & Admin** → **Service Accounts**
+   - Znajdź utworzony Service Account (email będzie wyglądał jak `firebase-adminsdk-xxxxx@game-vault-66ad9.iam.gserviceaccount.com`)
+   - Kliknij na email Service Account
+   - Przejdź do zakładki **PERMISSIONS**
+   - Kliknij **GRANT ACCESS** (lub **GRANT DOSTĘP**)
+   - W polu **New principals** wklej email Service Account
+   - W polu **Select a role** dodaj następujące role (dodaj każdą osobno):
+     - **Firebase Admin** (lub `roles/firebase.admin`)
+     - **Service Account User** (lub `roles/iam.serviceAccountUser`)
+     - **Cloud Functions Admin** (lub `roles/cloudfunctions.admin`)
+     - **Storage Admin** (lub `roles/storage.admin`) - jeśli używasz Firebase Storage
+   - Kliknij **SAVE** (lub **ZAPISZ**)
+
+4. **Dodaj sekret do GitHub:**
    - Przejdź do swojego repozytorium na GitHub
    - Kliknij **Settings** (na górze repozytorium)
    - W menu po lewej stronie kliknij **Secrets and variables** → **Actions**

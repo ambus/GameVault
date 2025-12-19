@@ -99,8 +99,8 @@ jobs:
           if [ -n "${SERVICE_ACCOUNT}" ]; then
             # Deploy z Service Account
             export GOOGLE_APPLICATION_CREDENTIALS=$HOME/firebase-service-account.json
-            firebase deploy --only hosting,functions
+            firebase deploy --only hosting,functions --force
           else
             # Deploy z Token
-            firebase deploy --only hosting,functions --token "${FIREBASE_TOKEN}"
+            firebase deploy --only hosting,functions --token "${FIREBASE_TOKEN}" --force
           fi
