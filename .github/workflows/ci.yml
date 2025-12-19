@@ -74,12 +74,15 @@ jobs:
 
       - name: Authenticate Firebase
         run: |
-          if [ -n "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" ]; then
+          SERVICE_ACCOUNT="${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
+          FIREBASE_TOKEN="${{ secrets.FIREBASE_TOKEN }}"
+
+          if [ -n "${SERVICE_ACCOUNT}" ]; then
             # Użyj Service Account (Opcja 1)
-            echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > $HOME/firebase-service-account.json
+            echo "${SERVICE_ACCOUNT}" > $HOME/firebase-service-account.json
             export GOOGLE_APPLICATION_CREDENTIALS=$HOME/firebase-service-account.json
             firebase use game-vault-66ad9
-          elif [ -n "${{ secrets.FIREBASE_TOKEN }}" ]; then
+          elif [ -n "${FIREBASE_TOKEN}" ]; then
             # Użyj Token (Opcja 2)
             firebase use game-vault-66ad9
           else
@@ -89,11 +92,14 @@ jobs:
 
       - name: Deploy to Firebase
         run: |
-          if [ -n "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" ]; then
+          SERVICE_ACCOUNT="${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
+          FIREBASE_TOKEN="${{ secrets.FIREBASE_TOKEN }}"
+
+          if [ -n "${SERVICE_ACCOUNT}" ]; then
             # Deploy z Service Account
             export GOOGLE_APPLICATION_CREDENTIALS=$HOME/firebase-service-account.json
             firebase deploy --only hosting,functions
           else
             # Deploy z Token
-            firebase deploy --only hosting,functions --token ${{ secrets.FIREBASE_TOKEN }}
+            firebase deploy --only hosting,functions --token "${FIREBASE_TOKEN}"
           fi
