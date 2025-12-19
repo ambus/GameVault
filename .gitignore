@@ -1,4 +1,4 @@
-# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+# See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # Compiled output
 /dist
@@ -12,7 +12,7 @@ npm-debug.log
 yarn-error.log
 
 # IDEs and editors
-.idea/
+/.idea
 .project
 .classpath
 .c9/
@@ -36,8 +36,17 @@ yarn-error.log
 /libpeerconnection.log
 testem.log
 /typings
-__screenshots__/
 
 # System files
 .DS_Store
 Thumbs.db
+
+# Firebase
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+.firebaserc.local
+
+# Functions
+functions/lib/
+functions/node_modules/

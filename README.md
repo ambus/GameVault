@@ -376,3 +376,100 @@ W Firebase Console możesz włączyć:
 
 Jeśli w przyszłości będziesz używać Firestore, pamiętaj o skonfigurowaniu reguł bezpieczeństwa w **Firestore Database** → **Rules**.
 
+## Wdrożenie na Firebase (CI/CD)
+
+Aplikacja jest skonfigurowana do automatycznego wdrażania na Firebase Hosting z obsługą SSR przez Cloud Functions.
+
+### Konfiguracja GitHub Actions
+
+Aby umożliwić automatyczne wdrażanie, musisz skonfigurować sekrety w GitHub. Masz dwie opcje:
+
+#### Opcja 1: FIREBASE_SERVICE_ACCOUNT (Zalecane)
+
+1. **Utwórz Service Account w Firebase:**
+   - Przejdź do [Firebase Console](https://console.firebase.google.com/)
+   - Wybierz projekt `game-vault-66ad9`
+   - Kliknij ikonę ⚙️ (Settings) obok "Project Overview"
+   - Przejdź do zakładki **Service Accounts**
+   - Kliknij przycisk **Generate New Private Key**
+   - W oknie dialogowym kliknij **Generate Key**
+   - Plik JSON zostanie automatycznie pobrany (np. `game-vault-66ad9-xxxxx.json`)
+
+2. **Dodaj sekret do GitHub:**
+   - Przejdź do swojego repozytorium na GitHub
+   - Kliknij **Settings** (na górze repozytorium)
+   - W menu po lewej stronie kliknij **Secrets and variables** → **Actions**
+   - Kliknij **New repository secret**
+   - **Name**: `FIREBASE_SERVICE_ACCOUNT`
+   - **Secret**: Otwórz pobrany plik JSON i skopiuj **całą jego zawartość** (od `{` do `}`)
+   - Wklej całą zawartość JSON do pola "Secret"
+   - Kliknij **Add secret**
+
+#### Opcja 2: FIREBASE_TOKEN (Alternatywa)
+
+1. **Zainstaluj Firebase CLI lokalnie:**
+   ```bash
+   npm install -g firebase-tools
+   ```
+
+2. **Zaloguj się i uzyskaj token:**
+   ```bash
+   firebase login:ci
+   ```
+   - Otworzy się przeglądarka - zaloguj się do konta Google powiązanego z Firebase
+   - Po zalogowaniu w terminalu pojawi się token (długi ciąg znaków)
+
+3. **Dodaj sekret do GitHub:**
+   - Przejdź do repozytorium na GitHub
+   - **Settings** → **Secrets and variables** → **Actions**
+   - Kliknij **New repository secret**
+   - **Name**: `FIREBASE_TOKEN`
+   - **Secret**: Wklej token skopiowany z terminala
+   - Kliknij **Add secret**
+
+#### Którą opcję wybrać?
+
+- **FIREBASE_SERVICE_ACCOUNT** (Opcja 1) - Zalecana, bardziej bezpieczna, daje pełny dostęp do projektu
+- **FIREBASE_TOKEN** (Opcja 2) - Prostsza, ale token wygasa po pewnym czasie i wymaga odnowienia
+
+**Uwaga:** W pliku `.github/workflows/ci.yml` używamy `FIREBASE_TOKEN`. Jeśli wybierzesz Opcję 1, musisz zaktualizować workflow, aby używał `FIREBASE_SERVICE_ACCOUNT` zamiast tokenu.
+
+### Struktura wdrożenia
+
+- **Firebase Hosting**: Służy statyczne pliki z `dist/GameVault/browser`
+- **Cloud Functions**: Obsługuje SSR dla wszystkich żądań
+- **Automatyczne wdrożenie**: Przy każdym push do `main` branch
+
+### Pliki konfiguracyjne
+
+- `firebase.json` - Konfiguracja Firebase Hosting i Functions
+- `.firebaserc` - ID projektu Firebase
+- `functions/` - Cloud Function dla SSR
+- `.github/workflows/ci.yml` - Pipeline CI/CD
+
+### Ręczne wdrożenie
+
+Jeśli chcesz wdrożyć ręcznie:
+
+```bash
+# Zbuduj aplikację
+npm run build:production
+
+# Zainstaluj zależności functions
+cd functions
+npm install
+
+# Zbuduj functions
+npm run build
+cd ..
+
+# Wdróż
+firebase deploy
+```
+
+### Uwagi dotyczące SSR
+
+- Cloud Function `ssr` obsługuje wszystkie żądania i renderuje aplikację Angular po stronie serwera
+- Statyczne pliki (JS, CSS, obrazy) są serwowane bezpośrednio z Firebase Hosting
+- Service Worker (PWA) działa w trybie offline dla statycznych zasobów
+
