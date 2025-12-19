@@ -70,6 +70,7 @@ jobs:
       - name: Build Functions
         run: |
           cd functions
+          npm run copy-server
           npm run build
 
       - name: Authenticate Firebase

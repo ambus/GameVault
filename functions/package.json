@@ -4,7 +4,8 @@
   "description": "Cloud Functions for GameVault SSR",
   "main": "lib/index.js",
   "scripts": {
-    "build": "tsc",
+    "copy-server": "mkdir -p dist/GameVault/server && if [ -d ../../dist/GameVault/server ]; then cp -r ../../dist/GameVault/server/* dist/GameVault/server/; else echo 'Warning: Server files not found at ../../dist/GameVault/server'; fi",
+    "build": "npm run copy-server && tsc",
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",

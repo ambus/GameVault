@@ -21,7 +21,10 @@ async function getServerModule() {
   }
 
   // The path is relative to the functions/lib directory after build
-  const serverPath = path.join(__dirname, '..', 'dist', 'GameVault', 'server', 'server.mjs');
+  // First try the copied location in functions/dist, then fallback to root dist
+  const serverPath = fs.existsSync(path.join(__dirname, '..', 'dist', 'GameVault', 'server', 'server.mjs'))
+    ? path.join(__dirname, '..', 'dist', 'GameVault', 'server', 'server.mjs')
+    : path.join(__dirname, '..', '..', '..', 'dist', 'GameVault', 'server', 'server.mjs');
   
   // Check if file exists
   if (!fs.existsSync(serverPath)) {
