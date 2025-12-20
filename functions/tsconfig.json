@@ -11,7 +11,8 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "moduleResolution": "node",
-    "lib": ["ES2022"]
+    "lib": ["ES2022"],
+    "moduleDetection": "force"
   },
   "compileOnSave": true,
   "include": [

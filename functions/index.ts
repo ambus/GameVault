@@ -52,9 +52,14 @@ async function getServerModule() {
 
   console.log(`Loading server module from: ${serverPath}`);
 
-  // Convert to file URL for ES module import
-  const serverUrl = url.pathToFileURL(serverPath).href;
-  serverModuleCache = await import(serverUrl);
+  // Convert to absolute path and then to file:// URL for ES module import
+  const absolutePath = path.resolve(serverPath);
+  const serverUrl = url.pathToFileURL(absolutePath).href;
+  
+  // Use dynamic import() - this works for ES modules in Node.js
+  // TypeScript may compile this, but we need to ensure it's not transformed to require()
+  // Using eval to prevent TypeScript from transforming the import
+  serverModuleCache = await (eval('import'))(serverUrl);
   
   return serverModuleCache;
 }
