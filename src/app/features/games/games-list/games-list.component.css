@@ -11,4 +11,11 @@
   grid-auto-rows: min-content;
 }
 
+/* Dodatkowy padding na dole na mobile, aby ostatni element był w pełni widoczny */
+@media (max-width: 768px) {
+  .games-container {
+    padding-bottom: 4rem;
+  }
+}
+
 

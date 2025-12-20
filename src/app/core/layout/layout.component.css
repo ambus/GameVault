@@ -57,10 +57,58 @@
   padding: 1rem;
   background-color: var(--color-dark-bg);
   border-bottom: 1px solid var(--color-card-border, rgba(255, 255, 255, 0.1));
+  position: -webkit-sticky;
+  position: sticky;
+  top: 64px;
+  z-index: 100;
+  box-shadow: 0 2px 4px var(--color-shadow-medium, rgba(0, 0, 0, 0.1));
+  will-change: transform;
+  /* Upewniamy się, że tło jest w pełni nieprzezroczyste i zakrywa treść */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  /* Nachodzimy na nagłówek o 1px, aby nie było przerwy */
+  margin-top: -1px;
 }
 
 .add-game-button {
   min-width: 150px;
+}
+
+/* Responsive design - na mobile przycisk jest na stałe na dole ekranu */
+@media (max-width: 768px) {
+  .add-game-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto;
+    margin-top: 0;
+    border-top: 1px solid var(--color-card-border, rgba(255, 255, 255, 0.1));
+    border-bottom: none;
+    box-shadow: 0 -2px 8px var(--color-shadow-medium, rgba(0, 0, 0, 0.2));
+    z-index: 999;
+    padding: 1rem;
+  }
+
+  /* Dodajemy padding-bottom do main, aby treść nie była zasłonięta przez przycisk */
+  .app-main {
+    padding-bottom: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  .add-game-container {
+    padding: 0.75rem;
+  }
+  
+  .add-game-button {
+    min-width: 120px;
+    width: 100%;
+  }
+
+  .app-main {
+    padding-bottom: 130px;
+  }
 }
 
 .app-main {
