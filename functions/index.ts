@@ -56,10 +56,13 @@ async function getServerModule() {
   const absolutePath = path.resolve(serverPath);
   const serverUrl = url.pathToFileURL(absolutePath).href;
   
-  // Use dynamic import() - this works for ES modules in Node.js
-  // TypeScript may compile this, but we need to ensure it's not transformed to require()
-  // Using eval to prevent TypeScript from transforming the import
-  serverModuleCache = await (eval('import'))(serverUrl);
+  // Use dynamic import() for ES modules
+  // In Node.js 20, dynamic import() works in CommonJS context
+  // We need to use Function constructor to prevent TypeScript from transforming import() to require()
+  // The string 'import' must be constructed at runtime to avoid TypeScript transformation
+  // Using eval to ensure import() is not transformed by TypeScript
+  const importFunc = eval('(specifier) => import(specifier)');
+  serverModuleCache = await importFunc(serverUrl);
   
   return serverModuleCache;
 }

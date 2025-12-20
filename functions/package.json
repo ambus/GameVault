@@ -3,6 +3,7 @@
   "version": "1.0.1",
   "description": "Cloud Functions for GameVault SSR",
   "main": "lib/index.js",
+  "type": "commonjs",
   "scripts": {
     "copy-server": "mkdir -p dist/GameVault/server && SOURCE_DIR=\"$(pwd)/../dist/GameVault/server\" && if [ -d \"$SOURCE_DIR\" ]; then cp -r \"$SOURCE_DIR\"/* dist/GameVault/server/ && echo 'Server files copied successfully from' \"$SOURCE_DIR\"; else echo 'Error: Server files not found at' \"$SOURCE_DIR\"; ls -la \"$(pwd)/../dist/GameVault/\" 2>&1 || true; exit 1; fi",
     "build": "npm run copy-server && tsc",
