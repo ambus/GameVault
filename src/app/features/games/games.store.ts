@@ -32,7 +32,7 @@ export class GamesStore {
         description.includes(q) ||
         gameGenre.includes(q);
       const matchesGenre = !genre || gameGenre === genre.toLowerCase();
-      const matchesPlatform = !platform || gamePlatform === platform;
+      const matchesPlatform = !platform || gamePlatform.toLowerCase() === platform.toLowerCase();
       return matchesText && matchesGenre && matchesPlatform;
     });
   });

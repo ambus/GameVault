@@ -4,11 +4,50 @@
   margin: 0 auto;
 }
 
+.filters-container {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: var(--color-dark-bg, rgba(32, 33, 36, 0.8));
+  border-radius: 8px;
+  box-shadow: 0 2px 4px var(--color-shadow-medium, rgba(0, 0, 0, 0.1));
+}
+
+.filters-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+.filter-dropdown {
+  min-width: 200px;
+  flex: 1 1 auto;
+}
+
+.clear-filters-button {
+  flex-shrink: 0;
+}
+
 .games-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 1rem;
   grid-auto-rows: min-content;
+}
+
+@media (max-width: 768px) {
+  .filters-row {
+    flex-direction: column;
+  }
+
+  .filter-dropdown {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .clear-filters-button {
+    width: 100%;
+  }
 }
 
 
