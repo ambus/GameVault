@@ -63,6 +63,18 @@
   object-fit: contain;
 }
 
+.game-cover .image-error-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.875rem;
+  background-color: var(--color-card-bg-secondary, rgba(255, 255, 255, 0.05));
+  border-radius: 4px;
+}
+
 .game-info {
   display: flex;
   flex-direction: column;

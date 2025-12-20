@@ -30,6 +30,7 @@
             [src]="getImageUrl(gameData.coverImage)"
             [alt]="gameData.name"
             (error)="onImageError($event)"
+            loading="lazy"
           />
         </div>
       }

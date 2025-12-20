@@ -281,21 +281,23 @@ export class DynamicFormComponent {
       return null;
     }
     
-    // Sprawdź czy to URL
-    if (value.startsWith('http://') || value.startsWith('https://') || value.startsWith('//')) {
-      return value;
+    const trimmedValue = value.trim();
+    
+    // Sprawdź czy to URL (http://, https://, //)
+    if (trimmedValue.startsWith('http://') || trimmedValue.startsWith('https://') || trimmedValue.startsWith('//')) {
+      return trimmedValue;
     }
     
     // Sprawdź czy to Base64
-    if (value.startsWith('data:image/')) {
-      return value;
+    if (trimmedValue.startsWith('data:image/')) {
+      return trimmedValue;
     }
     
     // Jeśli zaczyna się od base64 bez prefiksu, dodaj prefiks
-    if (value.startsWith('/9j/') || value.startsWith('iVBORw0KGgo')) {
+    if (trimmedValue.startsWith('/9j/') || trimmedValue.startsWith('iVBORw0KGgo')) {
       // JPEG lub PNG w Base64
-      const mimeType = value.startsWith('/9j/') ? 'image/jpeg' : 'image/png';
-      return `data:${mimeType};base64,${value}`;
+      const mimeType = trimmedValue.startsWith('/9j/') ? 'image/jpeg' : 'image/png';
+      return `data:${mimeType};base64,${trimmedValue}`;
     }
     
     return null;
@@ -303,7 +305,17 @@ export class DynamicFormComponent {
 
   onImageError(event: Event): void {
     const img = event.target as HTMLImageElement;
+    // Ukryj obraz i pokaż placeholder lub komunikat błędu
     img.style.display = 'none';
+    // Opcjonalnie: można dodać placeholder
+    const parent = img.parentElement;
+    if (parent && !parent.querySelector('.image-error-placeholder')) {
+      const placeholder = document.createElement('div');
+      placeholder.className = 'image-error-placeholder';
+      placeholder.textContent = 'Błąd ładowania obrazu';
+      placeholder.style.cssText = 'display: flex; align-items: center; justify-content: center; height: 100%; color: rgba(255, 255, 255, 0.5); font-size: 0.875rem;';
+      parent.appendChild(placeholder);
+    }
   }
 
   onFormKeyDown(event: Event): void {

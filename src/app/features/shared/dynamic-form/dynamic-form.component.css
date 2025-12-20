@@ -51,4 +51,16 @@
   object-fit: contain;
 }
 
+.image-error-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.875rem;
+  background-color: var(--surface-ground, rgba(255, 255, 255, 0.05));
+  border-radius: 8px;
+  border: 1px dashed var(--surface-border, rgba(255, 255, 255, 0.2));
+}
+
 
