@@ -5,6 +5,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { filter, map } from 'rxjs';
+import { GamesStore } from '../../../features/games/games.store';
 import { AuthService } from '../../auth/auth.service';
 
 @Component({
@@ -18,12 +19,14 @@ import { AuthService } from '../../auth/auth.service';
 export class HeaderComponent {
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
+  private readonly gamesStore = inject(GamesStore);
 
   menuToggle = output<void>();
   isDarkMode = signal(true);
 
   readonly user = this.authService.user;
   readonly userEmail = computed(() => this.user()?.email || '');
+  readonly searchQuery = computed(() => this.gamesStore.query());
 
   private readonly currentUrl = toSignalRxjs(
     this.router.events.pipe(
@@ -49,6 +52,11 @@ export class HeaderComponent {
 
   async onLogout(): Promise<void> {
     await this.authService.logout();
+  }
+
+  onSearchInput(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.gamesStore.setQuery(target.value);
   }
 }
 

@@ -10,6 +10,8 @@
       placeholder="Wyszukaj gry..."
       aria-label="Wyszukaj gry"
       [disabled]="isSearchDisabled()"
+      [value]="searchQuery()"
+      (input)="onSearchInput($event)"
     />
   </div>
   
