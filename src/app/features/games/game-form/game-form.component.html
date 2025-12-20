@@ -1,16 +1,26 @@
-<app-dynamic-form
-  [fields]="fields"
-  [initialValue]="initialValue()"
-  (submitted)="onSubmitted($event)"
-></app-dynamic-form>
+<div class="game-form">
+  <div class="form-actions-container">
+    <div class="form-actions">
+      <p-button
+        label="Zapisz"
+        icon="pi pi-save"
+        [disabled]="isFormInvalid()"
+        (click)="onSave()"
+      ></p-button>
+      <p-button
+        label="Anuluj"
+        icon="pi pi-times"
+        severity="secondary"
+        (click)="onCancel()"
+      ></p-button>
+    </div>
+  </div>
 
-<div class="form-cancel-action">
-  <p-button
-    label="Anuluj"
-    icon="pi pi-times"
-    severity="secondary"
-    (click)="onCancel()"
-  ></p-button>
+  <app-dynamic-form
+    [fields]="fields"
+    [initialValue]="initialValue()"
+    (submitted)="onSubmitted($event)"
+  ></app-dynamic-form>
 </div>
 
 

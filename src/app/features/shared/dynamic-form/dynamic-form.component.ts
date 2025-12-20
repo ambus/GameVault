@@ -208,6 +208,16 @@ export class DynamicFormComponent {
     this.submitted.emit(formValue);
   }
 
+  // Publiczna metoda do wywołania submit z zewnątrz
+  submitForm(): void {
+    this.onSubmit();
+  }
+
+  // Publiczna właściwość do sprawdzenia, czy formularz jest nieprawidłowy
+  get isFormInvalid(): boolean {
+    return this.form?.invalid ?? false;
+  }
+
   isFieldRequired(field: DynamicFieldConfig): boolean {
     return field.validators?.some(v => v.name === 'required') ?? false;
   }

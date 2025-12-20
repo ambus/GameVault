@@ -4,7 +4,8 @@ import {
   computed,
   effect,
   inject,
-  signal
+  signal,
+  viewChild
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -28,6 +29,7 @@ export class GameFormComponent {
 
   readonly fields = GAME_FORM_FIELDS;
   readonly editingId = signal<string | null>(null);
+  readonly dynamicForm = viewChild(DynamicFormComponent);
 
   readonly initialValue = computed(() => {
     const id = this.editingId();
@@ -70,6 +72,18 @@ export class GameFormComponent {
   onCancel(): void {
     this.router.navigate(['/games']);
   }
+
+  onSave(): void {
+    const form = this.dynamicForm();
+    if (form) {
+      form.submitForm();
+    }
+  }
+
+  readonly isFormInvalid = computed(() => {
+    const form = this.dynamicForm();
+    return form?.isFormInvalid ?? false;
+  });
 }
 
 
