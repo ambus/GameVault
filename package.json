@@ -11,7 +11,8 @@
     "test": "ng test",
     "lint": "eslint . --ext .ts,.html",
     "serve:ssr:GameVault": "node dist/GameVault/server/server.mjs",
-    "deploy": "npm run build:production && firebase deploy"
+    "deploy": "npm run build:production && firebase deploy",
+    "import-games": "node scripts/import-games.js"
   },
   "prettier": {
     "printWidth": 100,
@@ -58,6 +59,8 @@
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "eslint": "^9.0.0",
+    "firebase-admin": "^13.0.0",
+    "gray-matter": "^4.0.3",
     "husky": "^9.0.0",
     "jsdom": "^27.1.0",
     "typescript": "~5.9.2",

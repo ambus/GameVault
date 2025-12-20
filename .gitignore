@@ -46,6 +46,7 @@ Thumbs.db
 firebase-debug.log
 firebase-debug.*.log
 .firebaserc.local
+scripts/firebase-config.json
 
 # Functions
 functions/lib/
