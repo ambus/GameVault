@@ -13,7 +13,21 @@
           [pTooltip]="getPlatformLabel(gameData.platform)"
           tooltipPosition="top"
         >
-          <i [class]="getPlatformIcon(gameData.platform)"></i>
+          @if (isNintendoSwitch(gameData.platform)) {
+            <img 
+              src="https://upload.wikimedia.org/wikipedia/commons/9/9f/Nintendo-switch-icon.png" 
+              alt="Nintendo Switch"
+              class="nintendo-switch-icon"
+            />
+          } @else if (isNintendoSwitch2(gameData.platform)) {
+            <img 
+              src="https://upload.wikimedia.org/wikipedia/commons/c/c9/Nintendo_Switch_2_logo.svg" 
+              alt="Nintendo Switch 2"
+              class="nintendo-switch-icon"
+            />
+          } @else {
+            <i [class]="getPlatformIcon(gameData.platform)"></i>
+          }
         </span>
         <span
           class="icon-wrapper"

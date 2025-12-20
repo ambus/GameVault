@@ -27,19 +27,49 @@ export class GameCardComponent {
     }
   }
 
-  getPlatformIcon(platform: unknown): string {
-    const platformStr = String(platform || '').toLowerCase();
+  getPlatformIcon(platform: unknown): string | null {
+    if (!platform) {
+      return 'pi pi-desktop';
+    }
+    
+    const platformStr = String(platform).toLowerCase().trim();
+    
+    // Sprawdź czy to Nintendo Switch - zwróć null, żeby użyć SVG
+    if (platformStr === 'nintendo switch' || platformStr === 'ns') {
+      return null; // Zwróć null, żeby użyć SVG w template
+    }
+    
+    if (platformStr === 'nintendo switch 2' || platformStr === 'ns2') {
+      return null; // Zwróć null, żeby użyć SVG w template
+    }
+    
     const iconMap: Record<string, string> = {
       'pc': 'pi pi-desktop',
       'mac': 'pi pi-apple',
-      'nintendo switch': 'pi pi-gamepad',
-      'nintendo switch 2': 'pi pi-gamepad',
       'playstation': 'pi pi-play',
       'xbox': 'pi pi-microsoft',
       'mobile': 'pi pi-mobile'
     };
+    
     return iconMap[platformStr] || 'pi pi-desktop';
   }
+
+  isNintendoSwitch(platform: unknown): boolean {
+    if (!platform) {
+      return false;
+    }
+    const platformStr = String(platform).toLowerCase().trim();
+    return platformStr === 'nintendo switch' || platformStr === 'ns';
+  }
+
+  isNintendoSwitch2(platform: unknown): boolean {
+    if (!platform) {
+      return false;
+    }
+    const platformStr = String(platform).toLowerCase().trim();
+    return platformStr === 'nintendo switch 2' || platformStr === 'ns2';
+  }
+
 
   getVersionIcon(version: unknown): string {
     const versionStr = String(version || '').toLowerCase();
