@@ -1,0 +1,82 @@
+<div class="filters-container">
+  <div class="filters-row">
+    <p-select
+      [options]="genreOptions"
+      [(ngModel)]="selectedGenreValue"
+      (ngModelChange)="onGenreChange($event)"
+      placeholder="Wybierz gatunek"
+      [showClear]="true"
+      optionLabel="label"
+      optionValue="value"
+      styleClass="filter-dropdown"
+    ></p-select>
+    
+    <p-select
+      [options]="platformOptions"
+      [(ngModel)]="selectedPlatformValue"
+      (ngModelChange)="onPlatformChange($event)"
+      placeholder="Wybierz platformę"
+      [showClear]="true"
+      optionLabel="label"
+      optionValue="value"
+      styleClass="filter-dropdown"
+    ></p-select>
+
+    <p-select
+      [options]="ratingOptions"
+      [(ngModel)]="selectedRatingValue"
+      (ngModelChange)="onRatingChange($event)"
+      placeholder="Min. ocena"
+      [showClear]="true"
+      optionLabel="label"
+      optionValue="value"
+      styleClass="filter-dropdown"
+    ></p-select>
+
+    <p-select
+      [options]="isBorrowedOptions"
+      [(ngModel)]="selectedIsBorrowedValue"
+      (ngModelChange)="onIsBorrowedChange($event)"
+      placeholder="Czy pożyczone"
+      [showClear]="true"
+      optionLabel="label"
+      optionValue="value"
+      styleClass="filter-dropdown"
+    ></p-select>
+
+    <p-select
+      [options]="statusOptions"
+      [(ngModel)]="selectedStatusValue"
+      (ngModelChange)="onStatusChange($event)"
+      placeholder="Status"
+      [showClear]="true"
+      optionLabel="label"
+      optionValue="value"
+      styleClass="filter-dropdown"
+    ></p-select>
+
+    <p-autocomplete
+      [(ngModel)]="selectedTagsValue"
+      (ngModelChange)="onTagsChange($event)"
+      [suggestions]="tagSuggestions"
+      (completeMethod)="onTagSearch($event)"
+      placeholder="Wybierz tagi"
+      [multiple]="true"
+      [typeahead]="true"
+      [showClear]="true"
+      styleClass="filter-dropdown"
+    ></p-autocomplete>
+
+    @if (hasActiveFilters()) {
+      <p-button
+        label="Wyczyść filtry"
+        icon="pi pi-times"
+        severity="secondary"
+        size="small"
+        (click)="clearFilters()"
+        styleClass="clear-filters-button"
+      ></p-button>
+    }
+  </div>
+</div>
+

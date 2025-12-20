@@ -1,40 +1,5 @@
 <div class="games-container">
-  <div class="filters-container">
-    <div class="filters-row">
-      <p-select
-        [options]="genreOptions"
-        [(ngModel)]="selectedGenreValue"
-        (ngModelChange)="onGenreChange($event)"
-        placeholder="Wybierz gatunek"
-        [showClear]="true"
-        optionLabel="label"
-        optionValue="value"
-        styleClass="filter-dropdown"
-      ></p-select>
-      
-      <p-select
-        [options]="platformOptions"
-        [(ngModel)]="selectedPlatformValue"
-        (ngModelChange)="onPlatformChange($event)"
-        placeholder="Wybierz platformę"
-        [showClear]="true"
-        optionLabel="label"
-        optionValue="value"
-        styleClass="filter-dropdown"
-      ></p-select>
-
-      @if (hasActiveFilters()) {
-        <p-button
-          label="Wyczyść filtry"
-          icon="pi pi-times"
-          severity="secondary"
-          size="small"
-          (click)="clearFilters()"
-          styleClass="clear-filters-button"
-        ></p-button>
-      }
-    </div>
-  </div>
+  <app-games-filters></app-games-filters>
 
   <div class="games-grid">
     @for (game of displayedGames(); track game.id) {
