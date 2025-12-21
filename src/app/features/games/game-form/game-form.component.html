@@ -13,6 +13,14 @@
         severity="secondary"
         (click)="onCancel()"
       ></p-button>
+      @if (isEditing()) {
+        <p-button
+          label="Usuń"
+          icon="pi pi-trash"
+          severity="danger"
+          (click)="openDeleteDialog()"
+        ></p-button>
+      }
     </div>
   </div>
 
@@ -21,6 +29,51 @@
     [initialValue]="initialValue()"
     (submitted)="onSubmitted($event)"
   ></app-dynamic-form>
+
+  <p-dialog
+    header="Potwierdź usunięcie gry"
+    [visible]="showDeleteDialog()"
+    [modal]="true"
+    [style]="{ width: '500px' }"
+    (onHide)="closeDeleteDialog()"
+  >
+    <div class="delete-dialog-content">
+      <p class="warning-message">
+        Ta operacja jest nieodwracalna. Aby potwierdzić usunięcie, wpisz nazwę gry:
+      </p>
+      <p class="game-name-to-delete">
+        <strong>{{ gameName() }}</strong>
+      </p>
+      <form [formGroup]="deleteForm" class="delete-form">
+        <div class="form-field">
+          <label for="confirmName">Nazwa gry:</label>
+          <input
+            pInputText
+            id="confirmName"
+            formControlName="confirmName"
+            placeholder="Wpisz nazwę gry"
+            class="w-full"
+            (keyup.enter)="onDelete()"
+          />
+        </div>
+      </form>
+    </div>
+    <ng-template pTemplate="footer">
+      <p-button
+        label="Anuluj"
+        icon="pi pi-times"
+        severity="secondary"
+        (click)="closeDeleteDialog()"
+      ></p-button>
+      <p-button
+        label="Usuń"
+        icon="pi pi-trash"
+        severity="danger"
+        [disabled]="!canDelete()"
+        (click)="onDelete()"
+      ></p-button>
+    </ng-template>
+  </p-dialog>
 </div>
 
 

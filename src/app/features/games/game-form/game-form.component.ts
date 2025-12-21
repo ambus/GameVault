@@ -7,8 +7,11 @@ import {
   signal,
   viewChild
 } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
 import { DynamicFormComponent } from '../../shared/dynamic-form/dynamic-form.component';
 import { GamesStore } from '../games.store';
 import { Game } from '../games.types';
@@ -17,7 +20,7 @@ import { GAME_FORM_FIELDS } from '../schema/games-form.schema';
 @Component({
   standalone: true,
   selector: 'app-game-form',
-  imports: [DynamicFormComponent, ButtonModule],
+  imports: [DynamicFormComponent, ButtonModule, DialogModule, InputTextModule, ReactiveFormsModule],
   templateUrl: './game-form.component.html',
   styleUrl: './game-form.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -26,10 +29,13 @@ export class GameFormComponent {
   private readonly store = inject(GamesStore);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly fb = inject(FormBuilder);
 
   readonly fields = GAME_FORM_FIELDS;
   readonly editingId = signal<string | null>(null);
   readonly dynamicForm = viewChild(DynamicFormComponent);
+  readonly showDeleteDialog = signal(false);
+  readonly deleteForm: FormGroup;
 
   readonly initialValue = computed(() => {
     const id = this.editingId();
@@ -40,7 +46,20 @@ export class GameFormComponent {
     return {};
   });
 
+  readonly isEditing = computed(() => {
+    return this.editingId() !== null;
+  });
+
+  readonly gameName = computed(() => {
+    const game = this.store.selectedGame();
+    return game ? String(game['name'] || '') : '';
+  });
+
   constructor() {
+    this.deleteForm = this.fb.group({
+      confirmName: ['', [Validators.required]]
+    });
+
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.editingId.set(id);
@@ -84,6 +103,35 @@ export class GameFormComponent {
     const form = this.dynamicForm();
     return form?.isFormInvalid ?? false;
   });
+
+  openDeleteDialog(): void {
+    this.deleteForm.reset();
+    this.showDeleteDialog.set(true);
+  }
+
+  closeDeleteDialog(): void {
+    this.showDeleteDialog.set(false);
+    this.deleteForm.reset();
+  }
+
+  canDelete(): boolean {
+    const confirmName = this.deleteForm.get('confirmName')?.value || '';
+    const gameName = this.gameName();
+    return confirmName.trim() === gameName.trim();
+  }
+
+  onDelete(): void {
+    if (!this.canDelete()) {
+      return;
+    }
+
+    const id = this.editingId();
+    if (id) {
+      this.store.remove(id);
+      this.closeDeleteDialog();
+      this.router.navigate(['/games']);
+    }
+  }
 }
 
 
