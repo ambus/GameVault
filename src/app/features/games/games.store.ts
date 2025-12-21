@@ -18,7 +18,7 @@ export class GamesStore {
     status?: string;
     tags?: string[];
   }>({});
-  readonly sortBy = signal<{ field: string; direction: 'asc' | 'desc' }>({ field: 'name', direction: 'asc' });
+  readonly sortBy = signal<{ field: string; direction: 'asc' | 'desc' }>({ field: 'purchaseDate', direction: 'desc' });
 
   readonly selectedGame: Signal<Game | null> = computed(() => {
     const id = this.selectedId();

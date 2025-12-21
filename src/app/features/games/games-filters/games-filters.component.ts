@@ -115,8 +115,8 @@ export class GamesFiltersComponent {
   selectedIsBorrowedValue: boolean | null = null;
   selectedStatusValue: string | null = null;
   selectedTagsValue: string[] = [];
-  selectedSortByValue: string = 'name';
-  selectedSortDirectionValue: 'asc' | 'desc' = 'asc';
+  selectedSortByValue: string = 'purchaseDate';
+  selectedSortDirectionValue: 'asc' | 'desc' = 'desc';
 
   readonly sortByOptions = [
     { label: 'Nazwa', value: 'name' },
