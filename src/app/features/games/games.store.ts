@@ -18,6 +18,7 @@ export class GamesStore {
     status?: string;
     tags?: string[];
   }>({});
+  readonly sortBy = signal<{ field: string; direction: 'asc' | 'desc' }>({ field: 'name', direction: 'asc' });
 
   readonly selectedGame: Signal<Game | null> = computed(() => {
     const id = this.selectedId();
@@ -27,7 +28,9 @@ export class GamesStore {
   readonly filteredGames: Signal<Game[]> = computed(() => {
     const q = this.query().toLowerCase();
     const { genre, platform, rating, isBorrowed, status, tags } = this.filters();
-    return this.games().filter((g) => {
+    const { field, direction } = this.sortBy();
+    
+    const filtered = this.games().filter((g) => {
       const name = String(g['name'] ?? '').toLowerCase();
       const description = String(g['description'] ?? '').toLowerCase();
       const gameGenre = String(g['genre'] ?? '').toLowerCase();
@@ -55,7 +58,62 @@ export class GamesStore {
       
       return matchesText && matchesGenre && matchesPlatform && matchesRating && matchesIsBorrowed && matchesStatus && matchesTags;
     });
+
+    // Sortowanie
+    return this.sortGames(filtered, field, direction);
   });
+
+  /**
+   * Sortuje gry według wybranego pola i kierunku
+   */
+  private sortGames(games: Game[], field: string, direction: 'asc' | 'desc'): Game[] {
+    const sorted = [...games];
+    
+    sorted.sort((a, b) => {
+      let aValue: string | number | Date | null;
+      let bValue: string | number | Date | null;
+      
+      switch (field) {
+        case 'name':
+          aValue = String(a['name'] ?? '').toLowerCase();
+          bValue = String(b['name'] ?? '').toLowerCase();
+          break;
+        case 'purchaseDate':
+          aValue = a['purchaseDate'] ? new Date(String(a['purchaseDate'])).getTime() : 0;
+          bValue = b['purchaseDate'] ? new Date(String(b['purchaseDate'])).getTime() : 0;
+          break;
+        case 'completionDate':
+          aValue = a['completionDate'] ? new Date(String(a['completionDate'])).getTime() : 0;
+          bValue = b['completionDate'] ? new Date(String(b['completionDate'])).getTime() : 0;
+          break;
+        case 'rating':
+          aValue = typeof a['rating'] === 'number' ? a['rating'] : 0;
+          bValue = typeof b['rating'] === 'number' ? b['rating'] : 0;
+          break;
+        case 'status':
+          aValue = String(a['status'] ?? '').toLowerCase();
+          bValue = String(b['status'] ?? '').toLowerCase();
+          break;
+        case 'platform':
+          aValue = String(a['platform'] ?? '').toLowerCase();
+          bValue = String(b['platform'] ?? '').toLowerCase();
+          break;
+        default:
+          aValue = String(a['name'] ?? '').toLowerCase();
+          bValue = String(b['name'] ?? '').toLowerCase();
+      }
+      
+      if (aValue < bValue) {
+        return direction === 'asc' ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return direction === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+    
+    return sorted;
+  }
 
   /**
    * Konwertuje tagi z gry na tablicę stringów
@@ -116,6 +174,10 @@ export class GamesStore {
     tags?: string[];
   }): void {
     this.filters.set(filters);
+  }
+
+  setSortBy(field: string, direction: 'asc' | 'desc'): void {
+    this.sortBy.set({ field, direction });
   }
 
   select(id: string | null): void {

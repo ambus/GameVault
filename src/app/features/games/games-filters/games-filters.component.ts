@@ -82,6 +82,7 @@ export class GamesFiltersComponent {
   private readonly cdr = inject(ChangeDetectorRef);
 
   readonly currentFilters = computed(() => this.store.filters());
+  readonly currentSortBy = computed(() => this.store.sortBy());
 
   // Pobieramy opcje ze schema i dodajemy opcję "Wszystkie"
   readonly genreOptions = addAllOption(
@@ -114,6 +115,22 @@ export class GamesFiltersComponent {
   selectedIsBorrowedValue: boolean | null = null;
   selectedStatusValue: string | null = null;
   selectedTagsValue: string[] = [];
+  selectedSortByValue: string = 'name';
+  selectedSortDirectionValue: 'asc' | 'desc' = 'asc';
+
+  readonly sortByOptions = [
+    { label: 'Nazwa', value: 'name' },
+    { label: 'Data zakupu', value: 'purchaseDate' },
+    { label: 'Data ukończenia', value: 'completionDate' },
+    { label: 'Ocena', value: 'rating' },
+    { label: 'Status', value: 'status' },
+    { label: 'Platforma', value: 'platform' }
+  ];
+
+  readonly sortDirectionOptions = [
+    { label: 'Rosnąco', value: 'asc' },
+    { label: 'Malejąco', value: 'desc' }
+  ];
 
   constructor() {
     // Synchronizacja wartości z store do właściwości (tylko w jedną stronę)
@@ -168,6 +185,18 @@ export class GamesFiltersComponent {
       const tagsArray = tags || [];
       if (JSON.stringify(currentValue.sort()) !== JSON.stringify(tagsArray.sort())) {
         this.selectedTagsValue = [...tagsArray];
+        this.cdr.markForCheck();
+      }
+    });
+
+    effect(() => {
+      const sortBy = this.currentSortBy();
+      if (sortBy.field !== this.selectedSortByValue) {
+        this.selectedSortByValue = sortBy.field;
+        this.cdr.markForCheck();
+      }
+      if (sortBy.direction !== this.selectedSortDirectionValue) {
+        this.selectedSortDirectionValue = sortBy.direction;
         this.cdr.markForCheck();
       }
     });
@@ -282,6 +311,18 @@ export class GamesFiltersComponent {
 
   get tagSuggestions(): string[] {
     return this.tagSuggestionsSignal();
+  }
+
+  onSortByChange(sortBy: unknown): void {
+    const sortByValue = sortBy as string;
+    this.store.setSortBy(sortByValue, this.selectedSortDirectionValue);
+    this.cdr.markForCheck();
+  }
+
+  onSortDirectionChange(direction: unknown): void {
+    const directionValue = direction as 'asc' | 'desc';
+    this.store.setSortBy(this.selectedSortByValue, directionValue);
+    this.cdr.markForCheck();
   }
 
   clearFilters(): void {

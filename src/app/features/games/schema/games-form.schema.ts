@@ -42,7 +42,9 @@ export const GAME_FORM_FIELDS: DynamicFieldConfig[] = [
       { label: 'Tower Defense', value: 'Tower Defense' },
       { label: 'TPS', value: 'TPS' },
       { label: 'Wyścigowa', value: 'Racing' },
-      { label: 'Zręcznościowa', value: 'Arcade' }
+      { label: 'Zręcznościowa', value: 'Arcade' },
+      { label: 'Inny', value: 'Other' }
+
     ],
     validators: [Validators.required]
   },
