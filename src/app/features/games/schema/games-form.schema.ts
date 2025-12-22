@@ -138,6 +138,17 @@ export const GAME_FORM_FIELDS: DynamicFieldConfig[] = [
     label: 'Data ukończenia'
   },
   {
+    name: 'playtime',
+    type: 'number',
+    label: 'Czas przejścia (godziny)',
+    placeholder: '0',
+    validators: [Validators.min(0)],
+    showWhen: {
+      field: 'status',
+      value: 'completed'
+    }
+  },
+  {
     name: 'comment',
     type: 'textarea',
     label: 'Komentarz',

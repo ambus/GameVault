@@ -179,5 +179,26 @@ export class GameCardComponent {
     }
     return Array.isArray(tags) ? tags : [tags as string];
   }
+
+  formatPlaytime(playtime: unknown): string {
+    if (playtime === null || playtime === undefined) {
+      return '';
+    }
+    const hours = typeof playtime === 'number' ? playtime : Number(playtime);
+    if (isNaN(hours) || hours < 0) {
+      return '';
+    }
+    
+    // Zaokrąglij do 1 miejsca po przecinku jeśli nie jest całkowitą liczbą
+    const roundedHours = hours % 1 === 0 ? hours : Math.round(hours * 10) / 10;
+    
+    if (roundedHours === 1) {
+      return '1 godzina';
+    } else if (roundedHours < 5) {
+      return `${roundedHours} godziny`;
+    } else {
+      return `${roundedHours} godzin`;
+    }
+  }
 }
 

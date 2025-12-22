@@ -71,6 +71,13 @@
           </div>
         }
 
+        @if (gameData.status === 'completed' && gameData.playtime !== null && gameData.playtime !== undefined) {
+          <div class="info-row">
+            <span class="info-label">Czas przejścia:</span>
+            <span class="info-value">{{ formatPlaytime(gameData.playtime) }}</span>
+          </div>
+        }
+
         @if (gameData.isBorrowed) {
           <div class="info-row">
             <span class="info-label">Pożyczona:</span>

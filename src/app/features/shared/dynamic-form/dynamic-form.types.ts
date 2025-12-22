@@ -14,6 +14,8 @@ export interface DynamicFieldConfig {
   placeholder?: string;
   options?: DynamicFieldOption[];
   validators?: ValidatorFn[];
+  min?: number;
+  max?: number;
   showWhen?: {
     field: string;
     value: boolean | string | number;
