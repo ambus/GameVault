@@ -12,7 +12,8 @@
     "lint": "eslint . --ext .ts,.html",
     "serve:ssr:GameVault": "node dist/GameVault/server/server.mjs",
     "deploy": "npm run build:production && firebase deploy",
-    "import-games": "node scripts/import-games.js"
+    "import-games": "node scripts/import-games.js",
+    "backup-games": "node scripts/backup-games.js"
   },
   "prettier": {
     "printWidth": 100,

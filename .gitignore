@@ -47,6 +47,7 @@ firebase-debug.log
 firebase-debug.*.log
 .firebaserc.local
 scripts/firebase-config.json
+scripts/backups/
 
 # Functions
 functions/lib/

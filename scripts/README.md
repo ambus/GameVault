@@ -1,4 +1,87 @@
-# Skrypty importu gier
+# Skrypty zarządzania grami
+
+## Backup gier z Firebase
+
+Skrypt `backup-games.js` tworzy kopię zapasową wszystkich gier z Firebase Firestore i zapisuje je do pliku JSON.
+
+### Wymagania
+
+1. **Zainstalowany pakiet:**
+   ```bash
+   npm install firebase-admin
+   ```
+
+2. **Konfiguracja Firebase:**
+   
+   ⚠️ **WAŻNE:** `firebase login` nie wystarcza dla `firebase-admin` SDK!
+   
+   Skrypt używa tej samej konfiguracji co `import-games.js`. Zobacz sekcję [Konfiguracja Firebase](#konfiguracja-firebase) poniżej.
+
+### Użycie
+
+```bash
+npm run backup-games
+```
+
+lub bezpośrednio:
+
+```bash
+node scripts/backup-games.js
+```
+
+### Jak działa skrypt
+
+1. **Łączy się z Firebase Firestore** używając Firebase Admin SDK
+2. **Pobiera wszystkie gry** z kolekcji `games`
+3. **Tworzy plik backupowy** w katalogu `scripts/backups/`
+4. **Nazwa pliku zawiera datę i czas:** `backup-YYYY-MM-DD-HH-MM-SS.json`
+
+### Format pliku backupowego
+
+Plik JSON zawiera:
+- **Metadata:**
+  - `timestamp` - data i czas w formacie ISO
+  - `date` - data i czas w formacie polskim
+  - `totalGames` - liczba gier w backupie
+  - `version` - wersja formatu backupu
+- **Games:** tablica wszystkich gier z ich pełnymi danymi (włącznie z ID)
+
+### Przykładowa struktura pliku
+
+```json
+{
+  "metadata": {
+    "timestamp": "2025-01-15T14:30:45.123Z",
+    "date": "15.01.2025, 15:30:45",
+    "totalGames": 42,
+    "version": "1.0"
+  },
+  "games": [
+    {
+      "id": "abc123",
+      "name": "Nazwa gry",
+      "platform": "Nintendo Switch",
+      ...
+    },
+    ...
+  ]
+}
+```
+
+### Lokalizacja backupów
+
+Wszystkie backupowe pliki są zapisywane w:
+```
+scripts/backups/backup-YYYY-MM-DD-HH-MM-SS.json
+```
+
+Katalog `scripts/backups/` jest automatycznie tworzony przy pierwszym uruchomieniu i jest dodany do `.gitignore`.
+
+### Bezpieczeństwo
+
+⚠️ **UWAGA:** Pliki backupowe mogą zawierać wrażliwe dane. Katalog `scripts/backups/` jest dodany do `.gitignore` i nie będzie commitowany do repozytorium.
+
+---
 
 ## Import gier z plików markdown do Firebase
 
@@ -12,6 +95,8 @@ Skrypt `import-games.js` automatycznie wgrywa gry z plików markdown znajdujący
    ```
 
 2. **Konfiguracja Firebase:**
+   
+   <a name="konfiguracja-firebase"></a>
    
    ⚠️ **WAŻNE:** `firebase login` nie wystarcza dla `firebase-admin` SDK!
    
