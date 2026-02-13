@@ -6,7 +6,7 @@ export const routes: Routes = [
   {
     path: 'login',
     loadComponent: () =>
-      import('./features/auth/login/login.component').then((m) => m.LoginComponent)
+      import('./features/auth/login/login.component').then((m) => m.LoginComponent),
   },
   {
     path: '',
@@ -16,17 +16,21 @@ export const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'games'
+        redirectTo: 'games',
       },
       {
         path: 'games',
+        loadChildren: () => import('./features/games/games.routes').then((m) => m.GAMES_ROUTES),
+      },
+      {
+        path: 'analysis',
         loadChildren: () =>
-          import('./features/games/games.routes').then((m) => m.GAMES_ROUTES)
-      }
-    ]
+          import('./features/analysis/analysis.routes').then((m) => m.ANALYSIS_ROUTES),
+      },
+    ],
   },
   {
     path: '**',
-    redirectTo: 'games'
-  }
+    redirectTo: 'games',
+  },
 ];
