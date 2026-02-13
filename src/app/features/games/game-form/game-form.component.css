@@ -7,12 +7,12 @@
 .form-actions-container {
   position: -webkit-sticky;
   position: sticky;
-  top: 64px;
+  bottom: 0;
   z-index: 100;
   background-color: var(--color-dark-bg);
-  border-bottom: 1px solid var(--color-card-border, rgba(255, 255, 255, 0.1));
-  box-shadow: 0 2px 4px var(--color-shadow-medium, rgba(0, 0, 0, 0.1));
-  margin: -1rem -1rem 1.5rem -1rem;
+  border-top: 1px solid var(--color-card-border, rgba(255, 255, 255, 0.1));
+  box-shadow: 0 -2px 4px var(--color-shadow-medium, rgba(0, 0, 0, 0.1));
+  margin: 1.5rem -1rem -1rem -1rem;
   padding: 1rem;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -115,5 +115,3 @@
 .w-full {
   width: 100%;
 }
-
-

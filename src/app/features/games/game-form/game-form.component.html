@@ -1,4 +1,10 @@
 <div class="game-form">
+  <app-dynamic-form
+    [fields]="fields"
+    [initialValue]="initialValue()"
+    (submitted)="onSubmitted($event)"
+  ></app-dynamic-form>
+
   <div class="form-actions-container">
     <div class="form-actions">
       <p-button
@@ -23,12 +29,6 @@
       }
     </div>
   </div>
-
-  <app-dynamic-form
-    [fields]="fields"
-    [initialValue]="initialValue()"
-    (submitted)="onSubmitted($event)"
-  ></app-dynamic-form>
 
   <p-dialog
     header="Potwierdź usunięcie gry"
@@ -75,5 +75,3 @@
     </ng-template>
   </p-dialog>
 </div>
-
-
