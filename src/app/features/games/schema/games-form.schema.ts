@@ -7,7 +7,7 @@ export const GAME_FORM_FIELDS: DynamicFieldConfig[] = [
     type: 'text',
     label: 'Nazwa gry',
     placeholder: 'Wprowadź nazwę',
-    validators: [Validators.required, Validators.minLength(2)]
+    validators: [Validators.required, Validators.minLength(2)],
   },
   {
     name: 'genre',
@@ -43,10 +43,9 @@ export const GAME_FORM_FIELDS: DynamicFieldConfig[] = [
       { label: 'TPS', value: 'TPS' },
       { label: 'Wyścigowa', value: 'Racing' },
       { label: 'Zręcznościowa', value: 'Arcade' },
-      { label: 'Inny', value: 'Other' }
-
+      { label: 'Inny', value: 'Other' },
     ],
-    validators: [Validators.required]
+    validators: [Validators.required],
   },
   {
     name: 'platform',
@@ -56,17 +55,17 @@ export const GAME_FORM_FIELDS: DynamicFieldConfig[] = [
       { label: 'PC', value: 'PC' },
       { label: 'Mac', value: 'Mac' },
       { label: 'Nintendo Switch', value: 'Nintendo Switch' },
-      { label: 'Nintendo Switch 2', value: 'Nintendo Switch 2' }
+      { label: 'Nintendo Switch 2', value: 'Nintendo Switch 2' },
     ],
-    validators: [Validators.required]
+    validators: [Validators.required],
   },
-    {
+  {
     name: 'coverImage',
     type: 'image',
     label: 'Okładka',
-    placeholder: 'Wklej URL obrazka lub Base64'
+    placeholder: 'Wklej URL obrazka lub Base64',
   },
-    {
+  {
     name: 'version',
     type: 'select',
     label: 'Wersja',
@@ -74,8 +73,9 @@ export const GAME_FORM_FIELDS: DynamicFieldConfig[] = [
       { label: 'Pudełko płyta', value: 'box_disc' },
       { label: 'Pudełko kartridź', value: 'box_cartridge' },
       { label: 'Pudełko - kod', value: 'box_code' },
-      { label: 'Cyfrowa', value: 'digital' }
-    ]
+      { label: 'Cyfrowa', value: 'digital' },
+      { label: 'Abonament / Usługa', value: 'subscription' },
+    ],
   },
   {
     name: 'digitalStore',
@@ -92,30 +92,43 @@ export const GAME_FORM_FIELDS: DynamicFieldConfig[] = [
       { label: 'Origin', value: 'origin' },
       { label: 'Ubisoft Connect', value: 'ubisoft' },
       { label: 'Battle.net', value: 'battlenet' },
-      { label: 'Inny', value: 'other' }
+      { label: 'Xbox Game Pass', value: 'xbox_game_pass' },
+      { label: 'PlayStation Plus', value: 'ps_plus' },
+      { label: 'Nintendo Switch Online', value: 'nintendo_switch_online' },
+      { label: 'GeForce Now', value: 'geforce_now' },
+      { label: 'EA Play', value: 'ea_play' },
+      { label: 'Ubisoft+', value: 'ubisoft_plus' },
+      { label: 'Apple Arcade', value: 'apple_arcade' },
+      { label: 'Netflix Games', value: 'netflix' },
+      { label: 'Amazon Luna', value: 'luna' },
+      { label: 'Inny', value: 'other' },
     ],
     showWhen: {
       field: 'version',
-      value: 'digital'
-    }
+      value: ['digital', 'subscription'],
+    },
   },
   {
     name: 'purchaseDate',
     type: 'date',
     label: 'Data zakupu',
   },
-    {
+  {
     name: 'purchasePrice',
     type: 'number',
     label: 'Cena zakupu',
     placeholder: '0.00',
-    validators: [Validators.min(0)]
+    validators: [Validators.min(0)],
+    showWhen: {
+      field: 'version',
+      value: ['box_disc', 'box_cartridge', 'box_code', 'digital'],
+    },
   },
 
   {
     name: 'description',
     type: 'textarea',
-    label: 'Opis'
+    label: 'Opis',
   },
 
   {
@@ -129,13 +142,13 @@ export const GAME_FORM_FIELDS: DynamicFieldConfig[] = [
       { label: 'W trakcie', value: 'in_progress' },
       { label: 'Ukończona', value: 'completed' },
       { label: 'Wstrzymana', value: 'on_hold' },
-      { label: 'Nie ukończona', value: 'not_completed' }
-    ]
+      { label: 'Nie ukończona', value: 'not_completed' },
+    ],
   },
   {
     name: 'completionDate',
     type: 'date',
-    label: 'Data ukończenia'
+    label: 'Data ukończenia',
   },
   {
     name: 'playtime',
@@ -145,31 +158,31 @@ export const GAME_FORM_FIELDS: DynamicFieldConfig[] = [
     validators: [Validators.min(0)],
     showWhen: {
       field: 'status',
-      value: 'completed'
-    }
+      value: 'completed',
+    },
   },
   {
     name: 'comment',
     type: 'textarea',
     label: 'Komentarz',
-    placeholder: 'Dodaj komentarz do gry...'
+    placeholder: 'Dodaj komentarz do gry...',
   },
   {
     name: 'tags',
     type: 'tags',
     label: 'Tagi',
-    placeholder: 'Wpisz tag i naciśnij Enter, Tab lub przecinek'
+    placeholder: 'Wpisz tag i naciśnij Enter, Tab lub przecinek',
   },
   {
     name: 'rating',
     type: 'rating',
     label: 'Ocena',
-    validators: [Validators.min(0), Validators.max(10)]
+    validators: [Validators.min(0), Validators.max(10)],
   },
   {
     name: 'isBorrowed',
     type: 'checkbox',
-    label: 'Czy pożyczona'
+    label: 'Czy pożyczona',
   },
   {
     name: 'borrowDate',
@@ -177,8 +190,8 @@ export const GAME_FORM_FIELDS: DynamicFieldConfig[] = [
     label: 'Data pożyczenia',
     showWhen: {
       field: 'isBorrowed',
-      value: true
-    }
+      value: true,
+    },
   },
   {
     name: 'borrowedTo',
@@ -187,9 +200,7 @@ export const GAME_FORM_FIELDS: DynamicFieldConfig[] = [
     placeholder: 'Wprowadź imię lub nazwę',
     showWhen: {
       field: 'isBorrowed',
-      value: true
-    }
-  }
+      value: true,
+    },
+  },
 ];
-
-

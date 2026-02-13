@@ -6,7 +6,7 @@ import {
   inject,
   input,
   output,
-  signal
+  signal,
 } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AutoCompleteModule } from 'primeng/autocomplete';
@@ -34,11 +34,11 @@ import { DynamicFieldConfig } from './dynamic-form.types';
     CardModule,
     AutoCompleteModule,
     RatingModule,
-    CheckboxModule
+    CheckboxModule,
   ],
   templateUrl: './dynamic-form.component.html',
   styleUrl: './dynamic-form.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DynamicFormComponent {
   readonly #fb = inject(FormBuilder);
@@ -62,7 +62,13 @@ export class DynamicFormComponent {
     }
 
     const value = control.value;
-    return value === field.showWhen.value;
+    const targetValue = field.showWhen.value;
+
+    if (Array.isArray(targetValue)) {
+      return targetValue.includes(value);
+    }
+
+    return value === targetValue;
   }
 
   constructor() {
@@ -78,22 +84,27 @@ export class DynamicFormComponent {
       if (this.form && value) {
         const initial = { ...value };
         const ratingUpdates: Record<string, number | null> = {};
-        
+
         // Konwersja stringa daty na Date dla PrimeNG Calendar
         for (const field of this.fields()) {
-          if (field.type === 'date' && typeof initial[field.name] === 'string' && initial[field.name]) {
+          if (
+            field.type === 'date' &&
+            typeof initial[field.name] === 'string' &&
+            initial[field.name]
+          ) {
             initial[field.name] = new Date(initial[field.name] as string);
           }
-          
+
           // Aktualizacja wartości rating
           if (field.type === 'rating') {
             const ratingValue = initial[field.name];
-            ratingUpdates[field.name] = ratingValue !== null && ratingValue !== undefined ? Number(ratingValue) : null;
+            ratingUpdates[field.name] =
+              ratingValue !== null && ratingValue !== undefined ? Number(ratingValue) : null;
           }
         }
-        
+
         this.form.patchValue(initial);
-        
+
         if (Object.keys(ratingUpdates).length > 0) {
           this.ratingValues.update((current) => ({ ...current, ...ratingUpdates }));
         }
@@ -108,7 +119,7 @@ export class DynamicFormComponent {
 
     for (const field of this.fields()) {
       let value = initial[field.name];
-      
+
       // Dla checkboxa domyślna wartość to false
       if (field.type === 'checkbox' && value === undefined) {
         value = false;
@@ -118,18 +129,21 @@ export class DynamicFormComponent {
         value = [];
       } else if (field.type === 'tags' && typeof value === 'string') {
         // Konwersja stringa na tablicę (jeśli zapisane jako string)
-        value = value.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+        value = value
+          .split(',')
+          .map((tag) => tag.trim())
+          .filter((tag) => tag.length > 0);
       } else if (value === undefined) {
         value = null;
       }
-      
+
       // Konwersja stringa daty na Date dla PrimeNG Calendar
       if (field.type === 'date' && typeof value === 'string' && value) {
         value = new Date(value);
       }
-      
+
       controls[field.name] = [value, field.validators ?? []];
-      
+
       // Inicjalizacja wartości rating
       if (field.type === 'rating') {
         ratingValues[field.name] = value !== null && value !== undefined ? Number(value) : null;
@@ -148,7 +162,7 @@ export class DynamicFormComponent {
             const ratingValue = value !== null && value !== undefined ? Number(value) : null;
             this.ratingValues.update((current) => ({
               ...current,
-              [field.name]: ratingValue
+              [field.name]: ratingValue,
             }));
             this.#cdr.markForCheck();
           });
@@ -174,37 +188,37 @@ export class DynamicFormComponent {
       this.form.markAllAsTouched();
       return;
     }
-    
+
     const formValue = { ...this.form.value };
-    
+
     // Konwersja Date na string dla pól typu date
     for (const field of this.fields()) {
       if (field.type === 'date' && formValue[field.name] instanceof Date) {
         const date = formValue[field.name] as Date;
         formValue[field.name] = date.toISOString().split('T')[0];
       }
-      
+
       // Konwersja tablicy tagów na string (opcjonalnie, można też zostawić jako tablicę)
       if (field.type === 'tags' && Array.isArray(formValue[field.name])) {
         const tags = formValue[field.name] as unknown[];
-        const tagStrings = tags.map(tag => typeof tag === 'string' ? tag : String(tag));
-        
+        const tagStrings = tags.map((tag) => (typeof tag === 'string' ? tag : String(tag)));
+
         // Aktualizuj listę wszystkich tagów
-        this.allTags.update(current => {
+        this.allTags.update((current) => {
           const newTags = [...current];
-          tagStrings.forEach(tag => {
+          tagStrings.forEach((tag) => {
             if (!newTags.includes(tag)) {
               newTags.push(tag);
             }
           });
           return newTags;
         });
-        
+
         // Można zapisać jako tablicę lub string - zostawiamy jako tablicę
         // formValue[field.name] = tagStrings.join(',');
       }
     }
-    
+
     this.submitted.emit(formValue);
   }
 
@@ -219,7 +233,7 @@ export class DynamicFormComponent {
   }
 
   isFieldRequired(field: DynamicFieldConfig): boolean {
-    return field.validators?.some(v => v.name === 'required') ?? false;
+    return field.validators?.some((v) => v.name === 'required') ?? false;
   }
 
   isFieldInvalid(fieldName: string): boolean {
@@ -280,26 +294,30 @@ export class DynamicFormComponent {
     if (!value || typeof value !== 'string') {
       return null;
     }
-    
+
     const trimmedValue = value.trim();
-    
+
     // Sprawdź czy to URL (http://, https://, //)
-    if (trimmedValue.startsWith('http://') || trimmedValue.startsWith('https://') || trimmedValue.startsWith('//')) {
+    if (
+      trimmedValue.startsWith('http://') ||
+      trimmedValue.startsWith('https://') ||
+      trimmedValue.startsWith('//')
+    ) {
       return trimmedValue;
     }
-    
+
     // Sprawdź czy to Base64
     if (trimmedValue.startsWith('data:image/')) {
       return trimmedValue;
     }
-    
+
     // Jeśli zaczyna się od base64 bez prefiksu, dodaj prefiks
     if (trimmedValue.startsWith('/9j/') || trimmedValue.startsWith('iVBORw0KGgo')) {
       // JPEG lub PNG w Base64
       const mimeType = trimmedValue.startsWith('/9j/') ? 'image/jpeg' : 'image/png';
       return `data:${mimeType};base64,${trimmedValue}`;
     }
-    
+
     return null;
   }
 
@@ -313,7 +331,8 @@ export class DynamicFormComponent {
       const placeholder = document.createElement('div');
       placeholder.className = 'image-error-placeholder';
       placeholder.textContent = 'Błąd ładowania obrazu';
-      placeholder.style.cssText = 'display: flex; align-items: center; justify-content: center; height: 100%; color: rgba(255, 255, 255, 0.5); font-size: 0.875rem;';
+      placeholder.style.cssText =
+        'display: flex; align-items: center; justify-content: center; height: 100%; color: rgba(255, 255, 255, 0.5); font-size: 0.875rem;';
       parent.appendChild(placeholder);
     }
   }
@@ -332,7 +351,7 @@ export class DynamicFormComponent {
     if (event.key === 'Enter') {
       event.preventDefault();
       event.stopPropagation();
-      
+
       const control = this.form.get(fieldName);
       if (!control) {
         return;
@@ -340,7 +359,7 @@ export class DynamicFormComponent {
 
       const input = event.target as HTMLInputElement;
       const inputValue = input.value?.trim();
-      
+
       if (inputValue) {
         const currentTags = (control.value as string[]) || [];
         if (!currentTags.includes(inputValue)) {
@@ -362,23 +381,22 @@ export class DynamicFormComponent {
   onTagSearch(event: { query: string }, fieldName: string): void {
     const query = event.query?.toLowerCase() || '';
     const currentTags = this.form.get(fieldName)?.value || [];
-    const existingTags = Array.isArray(currentTags) ? currentTags.map((t: unknown) => 
-      typeof t === 'string' ? t.toLowerCase() : String(t).toLowerCase()
-    ) : [];
+    const existingTags = Array.isArray(currentTags)
+      ? currentTags.map((t: unknown) =>
+          typeof t === 'string' ? t.toLowerCase() : String(t).toLowerCase(),
+        )
+      : [];
 
     // Filtruj istniejące tagi i dodaj sugestie
     const suggestions = this.allTags()
-      .filter(tag => 
-        tag.toLowerCase().includes(query) && 
-        !existingTags.includes(tag.toLowerCase())
+      .filter(
+        (tag) => tag.toLowerCase().includes(query) && !existingTags.includes(tag.toLowerCase()),
       )
       .slice(0, 10);
 
-    this.tagSuggestions.update(current => ({
+    this.tagSuggestions.update((current) => ({
       ...current,
-      [fieldName]: suggestions
+      [fieldName]: suggestions,
     }));
   }
 }
-
-
