@@ -1,8 +1,15 @@
 <nav class="navbar">
   <div class="navbar-left">
+    <p-button
+      icon="pi pi-bars"
+      [text]="true"
+      severity="secondary"
+      class="menu-button"
+      (click)="onMenuClick()"
+    ></p-button>
     <span class="app-title">GameVault</span>
   </div>
-  
+
   <div class="navbar-center">
     <input
       type="text"
@@ -14,7 +21,7 @@
       (input)="onSearchInput($event)"
     />
   </div>
-  
+
   <div class="navbar-right">
     <span class="user-email">{{ userEmail() }}</span>
     <p-button
@@ -27,4 +34,3 @@
     ></p-button>
   </div>
 </nav>
-

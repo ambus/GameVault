@@ -1,72 +1,75 @@
-<div class="layout-container">
-  <aside class="sidebar-desktop">
-    <div class="sidebar-header">
-      <span class="app-title">GameVault</span>
-    </div>
-    <ul class="menu">
-      <li>
-        <a
-          routerLink="/games"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: false }"
-        >
-          <i class="pi pi-list"></i>
-          <span>Lista gier</span>
-        </a>
-      </li>
-      <li>
-        <a routerLink="/analysis" routerLinkActive="active">
-          <i class="pi pi-chart-bar"></i>
-          <span>Analizy</span>
-        </a>
-      </li>
-    </ul>
-  </aside>
+<div class="app-container">
+  <app-header (menuToggle)="toggleSidebar()" class="fixed-header" />
 
-  <div class="main-content">
-    <app-header (menuToggle)="toggleSidebar()" />
+  <div class="layout-body">
+    <aside class="sidebar-desktop">
+      <!-- Title removed as it's in the header -->
+      <ul class="menu">
+        <li>
+          <a
+            routerLink="/games"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: false }"
+          >
+            <i class="pi pi-list"></i>
+            <span>Lista gier</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/analysis" routerLinkActive="active">
+            <i class="pi pi-chart-bar"></i>
+            <span>Analizy</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
 
-    @if (sidebarVisible()) {
-      <div class="sidebar-overlay" (click)="sidebarVisible.set(false)">
-        <aside class="sidebar-mobile" (click)="$event.stopPropagation()">
-          <div class="sidebar-header">
-            <span class="app-title">GameVault</span>
-          </div>
-          <ul class="menu">
-            <li>
-              <a routerLink="/games" routerLinkActive="active" (click)="sidebarVisible.set(false)">
-                <i class="pi pi-list"></i>
-                <span>Lista gier</span>
-              </a>
-            </li>
-            <li>
-              <a
-                routerLink="/analysis"
-                routerLinkActive="active"
-                (click)="sidebarVisible.set(false)"
-              >
-                <i class="pi pi-chart-bar"></i>
-                <span>Analizy</span>
-              </a>
-            </li>
-          </ul>
-        </aside>
+    <main class="main-content">
+      @if (sidebarVisible()) {
+        <div class="sidebar-overlay" (click)="sidebarVisible.set(false)">
+          <aside class="sidebar-mobile" (click)="$event.stopPropagation()">
+            <!-- Title removed from mobile sidebar too to avoid duplication, or keep if user wants it there? 
+                 User said "nazwa aplikacji niech będzie tylko w górnym pasku". So remove it here too. -->
+            <ul class="menu">
+              <li>
+                <a
+                  routerLink="/games"
+                  routerLinkActive="active"
+                  (click)="sidebarVisible.set(false)"
+                >
+                  <i class="pi pi-list"></i>
+                  <span>Lista gier</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  routerLink="/analysis"
+                  routerLinkActive="active"
+                  (click)="sidebarVisible.set(false)"
+                >
+                  <i class="pi pi-chart-bar"></i>
+                  <span>Analizy</span>
+                </a>
+              </li>
+            </ul>
+          </aside>
+        </div>
+      }
+
+      @if (showAddButton()) {
+        <div class="add-game-container">
+          <p-button
+            label="Dodaj grę"
+            icon="pi pi-plus"
+            [routerLink]="['/games', 'new']"
+            styleClass="add-game-button"
+          ></p-button>
+        </div>
+      }
+
+      <div class="router-container">
+        <router-outlet />
       </div>
-    }
-
-    @if (showAddButton()) {
-      <div class="add-game-container">
-        <p-button
-          label="Dodaj grę"
-          icon="pi pi-plus"
-          [routerLink]="['/games', 'new']"
-          styleClass="add-game-button"
-        ></p-button>
-      </div>
-    }
-
-    <main class="app-main">
-      <router-outlet />
     </main>
   </div>
 </div>
