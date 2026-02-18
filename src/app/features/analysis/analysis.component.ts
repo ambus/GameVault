@@ -1,5 +1,6 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ActiveElement, ChartEvent } from 'chart.js';
 import { ChartModule } from 'primeng/chart';
 import { TableModule } from 'primeng/table';
 import { GamesStore } from '../games/games.store';
@@ -219,15 +220,21 @@ export class AnalysisComponent {
         },
       },
     },
-    onClick: (_event: any, elements: any[]) => {
+    onClick: (_event: ChartEvent, elements: ActiveElement[]) => {
       if (elements && elements.length > 0) {
         const index = elements[0].index;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         if (this.data().labels && this.data().labels[index]) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           this.selectedMonth.set(this.data().labels[index]);
         }
       }
     },
-    onHover: (event: any, elements: any[]) => {
+    onHover: (event: ChartEvent, elements: ActiveElement[]) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       event.native.target.style.cursor = elements[0] ? 'pointer' : 'default';
     },
   };
