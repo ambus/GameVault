@@ -2,8 +2,23 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* prevents global scroll */
   background-color: var(--surface-ground);
+}
+
+.pl-4 {
+  padding-left: 2rem !important;
+}
+
+.menu-section-title {
+  padding: 1rem 1.5rem 0.5rem 1.5rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--text-color-secondary);
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 /* Header is fixed at the top (handled by app-header styles, but we need to reserve space if it was fixed) 

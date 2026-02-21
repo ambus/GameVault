@@ -15,10 +15,17 @@
             <span>Lista gier</span>
           </a>
         </li>
+        <li class="menu-section-title">Analizy</li>
         <li>
-          <a routerLink="/analysis" routerLinkActive="active">
-            <i class="pi pi-chart-bar"></i>
-            <span>Analizy</span>
+          <a routerLink="/analysis/expenses" routerLinkActive="active" class="pl-4">
+            <i class="pi pi-dollar"></i>
+            <span>Wydatki</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/analysis/completed" routerLinkActive="active" class="pl-4">
+            <i class="pi pi-check-circle"></i>
+            <span>Ukończone gry</span>
           </a>
         </li>
       </ul>
@@ -41,14 +48,27 @@
                   <span>Lista gier</span>
                 </a>
               </li>
+              <li class="menu-section-title">Analizy</li>
               <li>
                 <a
-                  routerLink="/analysis"
+                  routerLink="/analysis/expenses"
                   routerLinkActive="active"
                   (click)="sidebarVisible.set(false)"
+                  class="pl-4"
                 >
-                  <i class="pi pi-chart-bar"></i>
-                  <span>Analizy</span>
+                  <i class="pi pi-dollar"></i>
+                  <span>Wydatki</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  routerLink="/analysis/completed"
+                  routerLinkActive="active"
+                  (click)="sidebarVisible.set(false)"
+                  class="pl-4"
+                >
+                  <i class="pi pi-check-circle"></i>
+                  <span>Ukończone gry</span>
                 </a>
               </li>
             </ul>
