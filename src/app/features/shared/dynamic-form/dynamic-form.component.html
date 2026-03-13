@@ -110,29 +110,56 @@
             <small class="p-error">{{ getFieldError(field.name) }}</small>
           }
         } @else if (field.type === 'image') {
-          <input
-            pInputText
-            [id]="field.name"
-            [formControlName]="field.name"
-            [placeholder]="field.placeholder || 'Wklej URL lub Base64'"
-            [class.ng-invalid]="isFieldInvalid(field.name)"
-            [class.ng-dirty]="isFieldDirty(field.name)"
-            class="w-full"
-          />
-          @if (isFieldInvalid(field.name) && isFieldDirty(field.name)) {
-            <small class="p-error">{{ getFieldError(field.name) }}</small>
-          }
-          @if (getImageUrl(field.name)) {
-            <div class="image-preview">
-              <img
-                [src]="getImageUrl(field.name)"
-                [alt]="field.label"
-                (error)="onImageError($event)"
-                class="preview-image"
-                loading="lazy"
+          <div class="image-field-container">
+            <div class="image-input-wrapper">
+              <input
+                pInputText
+                [id]="field.name"
+                [formControlName]="field.name"
+                [placeholder]="field.placeholder || 'Wklej URL lub Base64'"
+                [class.ng-invalid]="isFieldInvalid(field.name)"
+                [class.ng-dirty]="isFieldDirty(field.name)"
+                class="w-full image-text-input"
+              />
+              <p-button
+                icon="pi pi-upload"
+                [text]="true"
+                (click)="fileInput.click()"
+                pTooltip="Wybierz plik z dysku"
+                tooltipPosition="top"
+              ></p-button>
+              <input
+                #fileInput
+                type="file"
+                accept="image/*"
+                style="display: none"
+                (change)="onFileSelect($event, field.name)"
               />
             </div>
-          }
+            @if (isFieldInvalid(field.name) && isFieldDirty(field.name)) {
+              <small class="p-error">{{ getFieldError(field.name) }}</small>
+            }
+            @if (getImageUrl(field.name)) {
+              <div class="image-preview">
+                <img
+                  [src]="getImageUrl(field.name)"
+                  [alt]="field.label"
+                  (error)="onImageError($event)"
+                  class="preview-image"
+                  loading="lazy"
+                />
+                <p-button
+                  icon="pi pi-trash"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="danger"
+                  (click)="clearImage(field.name)"
+                  class="clear-image-btn"
+                  pTooltip="Usuń zdjęcie"
+                ></p-button>
+              </div>
+            }
+          </div>
         } @else if (field.type === 'tags') {
           <p-autocomplete
             [id]="field.name"

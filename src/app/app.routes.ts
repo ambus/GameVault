@@ -27,6 +27,11 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/analysis/analysis.routes').then((m) => m.ANALYSIS_ROUTES),
       },
+      {
+        path: 'wishlist',
+        loadChildren: () =>
+          import('./features/wishlist/wishlist.routes').then((m) => m.WISHLIST_ROUTES),
+      },
     ],
   },
   {

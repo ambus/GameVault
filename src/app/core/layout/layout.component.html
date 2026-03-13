@@ -15,6 +15,16 @@
             <span>Lista gier</span>
           </a>
         </li>
+        <li>
+          <a
+            routerLink="/wishlist"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: false }"
+          >
+            <i class="pi pi-heart"></i>
+            <span>Lista życzeń</span>
+          </a>
+        </li>
         <li class="menu-section-title">Analizy</li>
         <li>
           <a routerLink="/analysis/expenses" routerLinkActive="active" class="pl-4">
@@ -46,6 +56,16 @@
                 >
                   <i class="pi pi-list"></i>
                   <span>Lista gier</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  routerLink="/wishlist"
+                  routerLinkActive="active"
+                  (click)="sidebarVisible.set(false)"
+                >
+                  <i class="pi pi-heart"></i>
+                  <span>Lista życzeń</span>
                 </a>
               </li>
               <li class="menu-section-title">Analizy</li>
@@ -81,7 +101,7 @@
           <p-button
             label="Dodaj grę"
             icon="pi pi-plus"
-            [routerLink]="['/games', 'new']"
+            [routerLink]="addLink()"
             styleClass="add-game-button"
           ></p-button>
         </div>

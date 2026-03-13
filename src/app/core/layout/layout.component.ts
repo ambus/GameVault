@@ -28,8 +28,13 @@ export class LayoutComponent {
 
   readonly showAddButton = computed(() => {
     const url = this.currentUrl();
-    // Przycisk widoczny tylko na stronie głównej listy gier (/games bez /new ani /:id)
-    return url === '/games' || url === '/games/';
+    // Przycisk widoczny tylko na stronie głównej listy gier i listy życzeń
+    return url === '/games' || url === '/games/' || url === '/wishlist' || url === '/wishlist/';
+  });
+
+  readonly addLink = computed(() => {
+    const url = this.currentUrl();
+    return url.startsWith('/wishlist') ? ['/wishlist', 'new'] : ['/games', 'new'];
   });
 
   toggleSidebar(): void {

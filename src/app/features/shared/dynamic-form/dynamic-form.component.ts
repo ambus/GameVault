@@ -321,6 +321,40 @@ export class DynamicFormComponent {
     return null;
   }
 
+  onFileSelect(event: Event, fieldName: string): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) {
+      return;
+    }
+
+    const file = input.files[0];
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const base64String = reader.result as string;
+      const control = this.form.get(fieldName);
+      if (control) {
+        control.setValue(base64String);
+        control.markAsDirty();
+        control.markAsTouched();
+        this.#cdr.markForCheck();
+      }
+    };
+
+    reader.readAsDataURL(file);
+    // Resetuj input, aby można było wybrać ten sam plik ponownie
+    input.value = '';
+  }
+
+  clearImage(fieldName: string): void {
+    const control = this.form.get(fieldName);
+    if (control) {
+      control.setValue(null);
+      control.markAsDirty();
+      this.#cdr.markForCheck();
+    }
+  }
+
   onImageError(event: Event): void {
     const img = event.target as HTMLImageElement;
     // Ukryj obraz i pokaż placeholder lub komunikat błędu
