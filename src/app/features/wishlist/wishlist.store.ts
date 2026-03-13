@@ -18,11 +18,11 @@ export class WishlistStore {
 
   readonly filteredItems: Signal<WishlistItem[]> = computed(() => {
     const q = this.query().toLowerCase();
-    
+
     const filtered = this.items().filter((item) => {
       const name = (item.name ?? '').toLowerCase();
       const comment = (item.comment ?? '').toLowerCase();
-      
+
       return !q || name.includes(q) || comment.includes(q);
     });
 
@@ -54,12 +54,14 @@ export class WishlistStore {
 
   loadItems(): void {
     this.loading.set(true);
-    this.api.list().then((items) => {
-      this.items.set(items);
-    })
-    .finally(() => {
-      this.loading.set(false);
-    });
+    this.api
+      .list()
+      .then((items) => {
+        this.items.set(items);
+      })
+      .finally(() => {
+        this.loading.set(false);
+      });
   }
 
   setQuery(query: string): void {
@@ -75,7 +77,8 @@ export class WishlistStore {
       const { id, ...itemData } = item;
       this.api.update(id, itemData).subscribe(() => this.loadItems());
     } else {
-      const { id, ...itemData } = item;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { id: _id, ...itemData } = item;
       this.api.create(itemData).subscribe(() => this.loadItems());
     }
   }
