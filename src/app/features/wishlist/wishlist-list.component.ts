@@ -5,6 +5,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { WishlistCardComponent } from './wishlist-card.component';
 import { WishlistStore } from './wishlist.store';
+import { WishlistItem } from './wishlist.types';
 
 @Component({
   standalone: true,
@@ -30,6 +31,7 @@ import { WishlistStore } from './wishlist.store';
                 [item]="item"
                 (cardClick)="onEdit(item.id)"
                 (remove)="onRemove($event)"
+                (moveToGames)="onMoveToGames($event)"
               />
             }
           </div>
@@ -102,6 +104,21 @@ export class WishlistListComponent {
           summary: 'Usunięto',
           detail: 'Gra została usunięta z listy życzeń',
         });
+      },
+    });
+  }
+
+  onMoveToGames(item: WishlistItem): void {
+    this.router.navigate(['/games/new'], {
+      state: {
+        fromWishlistId: item.id,
+        gameData: {
+          name: item.name,
+          platform: item.platform,
+          coverImage: item.coverImage,
+          comment: item.comment,
+          version: item.distributionForm,
+        },
       },
     });
   }

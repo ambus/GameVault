@@ -14,16 +14,28 @@ import { WishlistItem } from './wishlist.types';
       <div class="game-card-content">
         <div class="game-header">
           <h3 class="game-title">{{ item().name }}</h3>
-          <p-button
-            icon="pi pi-trash"
-            [rounded]="true"
-            [text]="true"
-            severity="secondary"
-            size="small"
-            (click)="onRemove($event)"
-            pTooltip="Usuń z listy życzeń"
-            tooltipPosition="top"
-          />
+          <div class="game-actions">
+            <p-button
+              icon="pi pi-arrow-right"
+              [rounded]="true"
+              [text]="true"
+              severity="secondary"
+              size="small"
+              (click)="onMoveToGames($event)"
+              pTooltip="Przenieś do gier"
+              tooltipPosition="top"
+            />
+            <p-button
+              icon="pi pi-trash"
+              [rounded]="true"
+              [text]="true"
+              severity="secondary"
+              size="small"
+              (click)="onRemove($event)"
+              pTooltip="Usuń z listy życzeń"
+              tooltipPosition="top"
+            />
+          </div>
         </div>
 
         <div class="game-icons">
@@ -133,6 +145,10 @@ import { WishlistItem } from './wishlist.types';
         line-height: 1.3;
         flex: 1;
       }
+      .game-actions {
+        display: flex;
+        gap: 0.25rem;
+      }
       .game-icons {
         display: flex;
         gap: 0.5rem;
@@ -223,6 +239,7 @@ export class WishlistCardComponent {
   item = input.required<WishlistItem>();
   cardClick = output<WishlistItem>();
   remove = output<string>();
+  moveToGames = output<WishlistItem>();
 
   onCardClick(): void {
     this.cardClick.emit(this.item());
@@ -231,6 +248,11 @@ export class WishlistCardComponent {
   onRemove(event: Event): void {
     event.stopPropagation();
     this.remove.emit(this.item().id);
+  }
+
+  onMoveToGames(event: Event): void {
+    event.stopPropagation();
+    this.moveToGames.emit(this.item());
   }
 
   isNintendoSwitch(platform: string): boolean {

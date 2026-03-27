@@ -16,6 +16,7 @@ import { DynamicFormComponent } from '../../shared/dynamic-form/dynamic-form.com
 import { GamesStore } from '../games.store';
 import { Game } from '../games.types';
 import { GAME_FORM_FIELDS } from '../schema/games-form.schema';
+import { WishlistStore } from '../../wishlist/wishlist.store';
 
 @Component({
   standalone: true,
@@ -27,6 +28,7 @@ import { GAME_FORM_FIELDS } from '../schema/games-form.schema';
 })
 export class GameFormComponent {
   private readonly store = inject(GamesStore);
+  private readonly wishlistStore = inject(WishlistStore);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
@@ -37,13 +39,16 @@ export class GameFormComponent {
   readonly showDeleteDialog = signal(false);
   readonly deleteForm: FormGroup;
 
+  readonly prefilledData = signal<Record<string, unknown> | null>(null);
+  readonly wishlistIdToRemove = signal<string | null>(null);
+
   readonly initialValue = computed(() => {
     const id = this.editingId();
     if (id) {
       const game = this.store.selectedGame();
       return game ? { ...game } : {};
     }
-    return {};
+    return this.prefilledData() || {};
   });
 
   readonly isEditing = computed(() => {
@@ -56,6 +61,17 @@ export class GameFormComponent {
   });
 
   constructor() {
+    const navigation = this.router.getCurrentNavigation();
+    if (navigation?.extras.state) {
+      const state = navigation.extras.state;
+      if (state['gameData']) {
+        this.prefilledData.set(state['gameData']);
+      }
+      if (state['fromWishlistId']) {
+        this.wishlistIdToRemove.set(state['fromWishlistId']);
+      }
+    }
+
     this.deleteForm = this.fb.group({
       confirmName: ['', [Validators.required]]
     });
@@ -85,6 +101,12 @@ export class GameFormComponent {
       id: id || ''
     } as Game;
     this.store.upsert(game);
+
+    const wishlistId = this.wishlistIdToRemove();
+    if (wishlistId) {
+      this.wishlistStore.remove(wishlistId);
+    }
+
     this.router.navigate(['/games']);
   }
 
