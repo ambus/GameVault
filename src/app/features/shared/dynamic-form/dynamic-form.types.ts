@@ -25,8 +25,18 @@ export interface DynamicFieldConfig {
   validators?: ValidatorFn[];
   min?: number;
   max?: number;
-  showWhen?: {
-    field: string;
-    value: boolean | string | number | (boolean | string | number)[];
-  };
+  showWhen?:
+    | {
+        field: string;
+        value?: boolean | string | number | (boolean | string | number)[];
+        operator?: 'EQUALS' | 'NOT_EQUALS' | 'NOT_EMPTY' | 'EMPTY';
+      }
+    | {
+        conditions: {
+          field: string;
+          value?: boolean | string | number | (boolean | string | number)[];
+          operator?: 'EQUALS' | 'NOT_EQUALS' | 'NOT_EMPTY' | 'EMPTY';
+        }[];
+        logic?: 'AND' | 'OR';
+      };
 }

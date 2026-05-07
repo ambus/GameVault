@@ -1,9 +1,15 @@
 <p-card
-  styleClass="game-card"
+  [styleClass]="'game-card' + (game()?.isBorrowedFrom ? ' borrowed-from' : '')"
   (click)="onCardClick()"
 >
-  <div class="game-card-content">
+  <div class="game-card-content relative overflow-hidden">
     @let gameData = game();
+    @if (gameData?.isBorrowedFrom) {
+      <div class="borrowed-badge">
+        <i class="pi pi-share-alt mr-1"></i>
+        <span>POŻYCZONA</span>
+      </div>
+    }
     @if (gameData) {
       <h3 class="game-title">{{ gameData.name }}</h3>
       
@@ -59,7 +65,7 @@
 
         @if (gameData.purchaseDate) {
           <div class="info-row">
-            <span class="info-label">Data zakupu:</span>
+            <span class="info-label">{{ gameData.isBorrowedFrom ? 'Data pożyczenia:' : 'Data zakupu:' }}</span>
             <span class="info-value">{{ formatDate(gameData.purchaseDate) }}</span>
           </div>
         }
@@ -80,13 +86,25 @@
 
         @if (gameData.isBorrowed) {
           <div class="info-row">
-            <span class="info-label">Pożyczona:</span>
+            <span class="info-label">Pożyczona komuś:</span>
             <span class="info-value">
-              @if (gameData.borrowDate) {
-                {{ formatDate(gameData.borrowDate) }}
+              @if (gameData.borrowedTo) {
+                {{ gameData.borrowedTo }}
               } @else {
                 Tak
               }
+              @if (gameData.borrowDate) {
+                ({{ formatDate(gameData.borrowDate) }})
+              }
+            </span>
+          </div>
+        }
+
+        @if (gameData.isBorrowedFrom) {
+          <div class="info-row">
+            <span class="info-label">Pożyczona od:</span>
+            <span class="info-value">
+              {{ gameData.borrowedFrom || 'Kogoś' }}
             </span>
           </div>
         }

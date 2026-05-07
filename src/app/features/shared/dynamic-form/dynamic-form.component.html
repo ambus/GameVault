@@ -1,6 +1,6 @@
 <p-card>
   <form [formGroup]="form" (ngSubmit)="onSubmit()" (keydown.enter)="onFormKeyDown($event)" class="dynamic-form">
-    @for (field of fields(); track field.name) {
+    @for (field of fields(); track $index) {
       @if (isFieldVisible(field)) {
         <div class="field-wrapper">
         @if (field.type !== 'checkbox') {

@@ -54,8 +54,19 @@ function getRatingOptions(): FilterOption[] {
 function getIsBorrowedOptions(): FilterOption[] {
   return [
     { label: 'Wszystkie', value: null },
-    { label: 'Pożyczone', value: true },
-    { label: 'Nie pożyczone', value: false }
+    { label: 'Pożyczona komuś', value: true },
+    { label: 'Nie pożyczona komuś', value: false }
+  ];
+}
+
+/**
+ * Tworzy opcje dla filtra isBorrowedFrom
+ */
+function getIsBorrowedFromOptions(): FilterOption[] {
+  return [
+    { label: 'Wszystkie', value: null },
+    { label: 'Pożyczona od kogoś', value: true },
+    { label: 'Własna (nie pożyczona)', value: false }
   ];
 }
 
@@ -103,6 +114,7 @@ export class GamesFiltersComponent {
   // Rating i isBorrowed nie mają opcji w schema, więc tworzymy je programatycznie
   readonly ratingOptions = getRatingOptions();
   readonly isBorrowedOptions = getIsBorrowedOptions();
+  readonly isBorrowedFromOptions = getIsBorrowedFromOptions();
 
   // Pobieramy dostępne tagi z store
   readonly availableTags = computed(() => this.store.allTags());
@@ -113,6 +125,7 @@ export class GamesFiltersComponent {
   selectedPlatformValue: string | null = null;
   selectedRatingValue: number | null = null;
   selectedIsBorrowedValue: boolean | null = null;
+  selectedIsBorrowedFromValue: boolean | null = null;
   selectedStatusValue: string | null = null;
   selectedTagsValue: string[] = [];
   selectedSortByValue: string = 'purchaseDate';
@@ -166,6 +179,15 @@ export class GamesFiltersComponent {
       const currentValue = this.selectedIsBorrowedValue;
       if (currentValue !== (isBorrowed ?? null)) {
         this.selectedIsBorrowedValue = isBorrowed ?? null;
+        this.cdr.markForCheck();
+      }
+    });
+
+    effect(() => {
+      const isBorrowedFrom = this.currentFilters().isBorrowedFrom;
+      const currentValue = this.selectedIsBorrowedFromValue;
+      if (currentValue !== (isBorrowedFrom ?? null)) {
+        this.selectedIsBorrowedFromValue = isBorrowedFrom ?? null;
         this.cdr.markForCheck();
       }
     });
@@ -262,6 +284,21 @@ export class GamesFiltersComponent {
     this.cdr.markForCheck();
   }
 
+  onIsBorrowedFromChange(isBorrowedFrom: unknown): void {
+    const isBorrowedFromValue = isBorrowedFrom as boolean | null | undefined;
+    const currentFilters = this.store.filters();
+    const newFilters = { ...currentFilters };
+    
+    if (isBorrowedFromValue === null || isBorrowedFromValue === undefined) {
+      delete newFilters.isBorrowedFrom;
+    } else {
+      newFilters.isBorrowedFrom = isBorrowedFromValue;
+    }
+    
+    this.store.setFilters(newFilters);
+    this.cdr.markForCheck();
+  }
+
   onStatusChange(status: unknown): void {
     const statusValue = status as string | null | undefined;
     const currentFilters = this.store.filters();
@@ -331,7 +368,7 @@ export class GamesFiltersComponent {
 
   readonly hasActiveFilters = computed(() => {
     const filters = this.currentFilters();
-    return !!(filters.genre || filters.platform || filters.rating !== undefined || filters.isBorrowed !== undefined || filters.status || (filters.tags && filters.tags.length > 0));
+    return !!(filters.genre || filters.platform || filters.rating !== undefined || filters.isBorrowed !== undefined || filters.isBorrowedFrom !== undefined || filters.status || (filters.tags && filters.tags.length > 0));
   });
 }
 

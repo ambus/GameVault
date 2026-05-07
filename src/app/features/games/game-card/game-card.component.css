@@ -4,6 +4,12 @@
   border-radius: 8px !important;
   cursor: pointer;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden !important; /* Ensure ribbon is clipped */
+}
+
+.game-card.borrowed-from {
+  border-color: #f59e0b !important;
+  background-color: rgba(245, 158, 11, 0.05) !important;
 }
 
 .game-card:hover {
@@ -125,4 +131,39 @@
 .mb-2 {
   margin-bottom: 0.5rem;
 }
+
+/* Utility classes to avoid full Tailwind dependence if not available */
+.relative {
+  position: relative;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.borrowed-badge {
+  position: absolute;
+  top: 10px;
+  right: -30px;
+  background: #f59e0b; /* Amber 500 */
+  color: #000;
+  padding: 4px 35px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  transform: rotate(45deg);
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.borrowed-badge i {
+  font-size: 0.75rem;
+  margin-right: 4px;
+}
+
 

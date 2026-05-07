@@ -64,7 +64,18 @@
       [options]="isBorrowedOptions"
       [(ngModel)]="selectedIsBorrowedValue"
       (ngModelChange)="onIsBorrowedChange($event)"
-      placeholder="Czy pożyczone"
+      placeholder="Pożyczona komuś"
+      [showClear]="true"
+      optionLabel="label"
+      optionValue="value"
+      styleClass="filter-dropdown"
+    ></p-select>
+
+    <p-select
+      [options]="isBorrowedFromOptions"
+      [(ngModel)]="selectedIsBorrowedFromValue"
+      (ngModelChange)="onIsBorrowedFromChange($event)"
+      placeholder="Pożyczona od kogoś"
       [showClear]="true"
       optionLabel="label"
       optionValue="value"

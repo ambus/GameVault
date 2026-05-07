@@ -15,6 +15,7 @@ export class GamesStore {
     platform?: string;
     rating?: number;
     isBorrowed?: boolean;
+    isBorrowedFrom?: boolean;
     status?: string;
     tags?: string[];
   }>({});
@@ -27,7 +28,7 @@ export class GamesStore {
 
   readonly filteredGames: Signal<Game[]> = computed(() => {
     const q = this.query().toLowerCase();
-    const { genre, platform, rating, isBorrowed, status, tags } = this.filters();
+    const { genre, platform, rating, isBorrowed, isBorrowedFrom, status, tags } = this.filters();
     const { field, direction } = this.sortBy();
     
     const filtered = this.games().filter((g) => {
@@ -37,6 +38,7 @@ export class GamesStore {
       const gamePlatform = String(g['platform'] ?? '');
       const gameRating = typeof g['rating'] === 'number' ? g['rating'] : null;
       const gameIsBorrowed = Boolean(g['isBorrowed']);
+      const gameIsBorrowedFrom = Boolean(g['isBorrowedFrom']);
       const gameStatus = String(g['status'] ?? '');
       
       // Pobierz tagi z gry
@@ -51,12 +53,13 @@ export class GamesStore {
       const matchesPlatform = !platform || gamePlatform.toLowerCase() === platform.toLowerCase();
       const matchesRating = rating === undefined || (gameRating !== null && gameRating >= rating);
       const matchesIsBorrowed = isBorrowed === undefined || gameIsBorrowed === isBorrowed;
+      const matchesIsBorrowedFrom = isBorrowedFrom === undefined || gameIsBorrowedFrom === isBorrowedFrom;
       const matchesStatus = !status || gameStatus === status;
       const matchesTags = !tags || tags.length === 0 || tags.every(tag => 
         gameTags.some(gameTag => gameTag.toLowerCase() === tag.toLowerCase())
       );
       
-      return matchesText && matchesGenre && matchesPlatform && matchesRating && matchesIsBorrowed && matchesStatus && matchesTags;
+      return matchesText && matchesGenre && matchesPlatform && matchesRating && matchesIsBorrowed && matchesIsBorrowedFrom && matchesStatus && matchesTags;
     });
 
     // Sortowanie
@@ -170,6 +173,7 @@ export class GamesStore {
     platform?: string;
     rating?: number;
     isBorrowed?: boolean;
+    isBorrowedFrom?: boolean;
     status?: string;
     tags?: string[];
   }): void {

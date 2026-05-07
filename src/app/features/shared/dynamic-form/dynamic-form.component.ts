@@ -56,19 +56,53 @@ export class DynamicFormComponent {
       return true;
     }
 
-    const control = this.form.get(field.showWhen.field);
-    if (!control) {
-      return false;
+    let conditions: any[] = [];
+    let logic: 'AND' | 'OR' = 'AND';
+
+    if (Array.isArray(field.showWhen)) {
+      conditions = field.showWhen;
+      logic = 'AND';
+    } else if (field.showWhen && 'conditions' in field.showWhen) {
+      conditions = field.showWhen.conditions;
+      logic = field.showWhen.logic || 'AND';
+    } else {
+      conditions = [field.showWhen];
     }
 
-    const value = control.value;
-    const targetValue = field.showWhen.value;
+    const checkCondition = (condition: any) => {
+      const control = this.form.get(condition.field);
+      if (!control) {
+        return false;
+      }
 
-    if (Array.isArray(targetValue)) {
-      return targetValue.includes(value);
+      const value = control.value;
+      const targetValue = condition.value;
+      const operator = condition.operator || 'EQUALS';
+
+      switch (operator) {
+        case 'EQUALS':
+          if (Array.isArray(targetValue)) {
+            return targetValue.includes(value);
+          }
+          return value === targetValue;
+        case 'NOT_EQUALS':
+          if (Array.isArray(targetValue)) {
+            return !targetValue.includes(value);
+          }
+          return value !== targetValue;
+        case 'NOT_EMPTY':
+          return value !== null && value !== undefined && value !== '' && (!Array.isArray(value) || value.length > 0);
+        case 'EMPTY':
+          return value === null || value === undefined || value === '' || (Array.isArray(value) && value.length === 0);
+        default:
+          return false;
+      }
+    };
+
+    if (logic === 'OR') {
+      return conditions.some((c) => checkCondition(c));
     }
-
-    return value === targetValue;
+    return conditions.every((c) => checkCondition(c));
   }
 
   constructor() {
@@ -173,11 +207,22 @@ export class DynamicFormComponent {
     // Subskrypcja valueChanges dla pól z warunkowym wyświetlaniem
     for (const field of this.fields()) {
       if (field.showWhen) {
-        const control = this.form.get(field.showWhen.field);
-        if (control) {
-          control.valueChanges.subscribe(() => {
-            this.#cdr.markForCheck();
-          });
+        let conditions: any[] = [];
+        if (Array.isArray(field.showWhen)) {
+          conditions = field.showWhen;
+        } else if ('conditions' in field.showWhen) {
+          conditions = field.showWhen.conditions;
+        } else {
+          conditions = [field.showWhen];
+        }
+
+        for (const condition of conditions) {
+          const control = this.form.get(condition.field);
+          if (control) {
+            control.valueChanges.subscribe(() => {
+              this.#cdr.markForCheck();
+            });
+          }
         }
       }
     }

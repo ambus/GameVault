@@ -112,6 +112,19 @@ export const GAME_FORM_FIELDS: DynamicFieldConfig[] = [
     name: 'purchaseDate',
     type: 'date',
     label: 'Data zakupu',
+    showWhen: {
+      field: 'isBorrowedFrom',
+      value: false,
+    },
+  },
+  {
+    name: 'purchaseDate',
+    type: 'date',
+    label: 'Data pożyczenia',
+    showWhen: {
+      field: 'isBorrowedFrom',
+      value: true,
+    },
   },
   {
     name: 'purchasePrice',
@@ -120,8 +133,16 @@ export const GAME_FORM_FIELDS: DynamicFieldConfig[] = [
     placeholder: '0.00',
     validators: [Validators.min(0)],
     showWhen: {
-      field: 'version',
-      value: ['box_disc', 'box_cartridge', 'box_code', 'digital'],
+      conditions: [
+        {
+          field: 'version',
+          value: ['box_disc', 'box_cartridge', 'box_code', 'digital'],
+        },
+        {
+          field: 'isBorrowedFrom',
+          value: false,
+        },
+      ],
     },
   },
 
@@ -157,8 +178,17 @@ export const GAME_FORM_FIELDS: DynamicFieldConfig[] = [
     placeholder: '0',
     validators: [Validators.min(0)],
     showWhen: {
-      field: 'status',
-      value: 'completed',
+      logic: 'OR',
+      conditions: [
+        {
+          field: 'status',
+          value: 'completed',
+        },
+        {
+          field: 'completionDate',
+          operator: 'NOT_EMPTY',
+        },
+      ],
     },
   },
   {
@@ -182,7 +212,7 @@ export const GAME_FORM_FIELDS: DynamicFieldConfig[] = [
   {
     name: 'isBorrowed',
     type: 'checkbox',
-    label: 'Czy pożyczona',
+    label: 'Czy pożyczona komuś',
   },
   {
     name: 'borrowDate',
@@ -200,6 +230,21 @@ export const GAME_FORM_FIELDS: DynamicFieldConfig[] = [
     placeholder: 'Wprowadź imię lub nazwę',
     showWhen: {
       field: 'isBorrowed',
+      value: true,
+    },
+  },
+  {
+    name: 'isBorrowedFrom',
+    type: 'checkbox',
+    label: 'Pożyczona od kogoś',
+  },
+  {
+    name: 'borrowedFrom',
+    type: 'text',
+    label: 'Od kogo pożyczona',
+    placeholder: 'Wprowadź imię lub nazwę',
+    showWhen: {
+      field: 'isBorrowedFrom',
       value: true,
     },
   },
