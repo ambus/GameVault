@@ -1,16 +1,32 @@
 import { inject } from '@angular/core';
-import { Router, CanActivateFn } from '@angular/router';
+import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from './auth.service';
 
-export const authGuard: CanActivateFn = (route, state) => {
+export const authGuard: CanActivateFn = async (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
+
+  await authService.waitForAuthReady();
 
   if (authService.isAuthenticated() && authService.isAuthorized()) {
     return true;
   }
 
-  router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
-  return false;
+  return router.createUrlTree(['/login'], {
+    queryParams: { returnUrl: state.url },
+  });
 };
 
+export const guestGuard: CanActivateFn = async (route) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  await authService.waitForAuthReady();
+
+  if (authService.isAuthenticated() && authService.isAuthorized()) {
+    const returnUrl = route.queryParams['returnUrl'] || '/games';
+    return router.createUrlTree([returnUrl]);
+  }
+
+  return true;
+};
