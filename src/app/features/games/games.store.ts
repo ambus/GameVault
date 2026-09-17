@@ -1,4 +1,5 @@
 import { Injectable, Signal, computed, effect, inject, signal } from '@angular/core';
+import { parseIsoDateToLocalDate } from '../../core/utils/date.utils';
 import { GamesService } from './games.service';
 import { Game } from './games.types';
 
@@ -10,8 +11,8 @@ export class GamesStore {
   readonly loading = signal(false);
   readonly selectedId = signal<string | null>(null);
   readonly query = signal('');
-  readonly filters = signal<{ 
-    genre?: string; 
+  readonly filters = signal<{
+    genre?: string;
     platform?: string;
     rating?: number;
     isBorrowed?: boolean;
@@ -19,7 +20,10 @@ export class GamesStore {
     status?: string;
     tags?: string[];
   }>({});
-  readonly sortBy = signal<{ field: string; direction: 'asc' | 'desc' }>({ field: 'purchaseDate', direction: 'desc' });
+  readonly sortBy = signal<{ field: string; direction: 'asc' | 'desc' }>({
+    field: 'purchaseDate',
+    direction: 'desc',
+  });
 
   readonly selectedGame: Signal<Game | null> = computed(() => {
     const id = this.selectedId();
@@ -30,7 +34,7 @@ export class GamesStore {
     const q = this.query().toLowerCase();
     const { genre, platform, rating, isBorrowed, isBorrowedFrom, status, tags } = this.filters();
     const { field, direction } = this.sortBy();
-    
+
     const filtered = this.games().filter((g) => {
       const name = String(g['name'] ?? '').toLowerCase();
       const description = String(g['description'] ?? '').toLowerCase();
@@ -40,26 +44,36 @@ export class GamesStore {
       const gameIsBorrowed = Boolean(g['isBorrowed']);
       const gameIsBorrowedFrom = Boolean(g['isBorrowedFrom']);
       const gameStatus = String(g['status'] ?? '');
-      
+
       // Pobierz tagi z gry
       const gameTags = this.getGameTags(g['tags']);
-      
+
       const matchesText =
-        !q ||
-        name.includes(q) ||
-        description.includes(q) ||
-        gameGenre.includes(q);
+        !q || name.includes(q) || description.includes(q) || gameGenre.includes(q);
       const matchesGenre = !genre || gameGenre === genre.toLowerCase();
       const matchesPlatform = !platform || gamePlatform.toLowerCase() === platform.toLowerCase();
       const matchesRating = rating === undefined || (gameRating !== null && gameRating >= rating);
       const matchesIsBorrowed = isBorrowed === undefined || gameIsBorrowed === isBorrowed;
-      const matchesIsBorrowedFrom = isBorrowedFrom === undefined || gameIsBorrowedFrom === isBorrowedFrom;
+      const matchesIsBorrowedFrom =
+        isBorrowedFrom === undefined || gameIsBorrowedFrom === isBorrowedFrom;
       const matchesStatus = !status || gameStatus === status;
-      const matchesTags = !tags || tags.length === 0 || tags.every(tag => 
-        gameTags.some(gameTag => gameTag.toLowerCase() === tag.toLowerCase())
+      const matchesTags =
+        !tags ||
+        tags.length === 0 ||
+        tags.every((tag) =>
+          gameTags.some((gameTag) => gameTag.toLowerCase() === tag.toLowerCase()),
+        );
+
+      return (
+        matchesText &&
+        matchesGenre &&
+        matchesPlatform &&
+        matchesRating &&
+        matchesIsBorrowed &&
+        matchesIsBorrowedFrom &&
+        matchesStatus &&
+        matchesTags
       );
-      
-      return matchesText && matchesGenre && matchesPlatform && matchesRating && matchesIsBorrowed && matchesIsBorrowedFrom && matchesStatus && matchesTags;
     });
 
     // Sortowanie
@@ -71,23 +85,31 @@ export class GamesStore {
    */
   private sortGames(games: Game[], field: string, direction: 'asc' | 'desc'): Game[] {
     const sorted = [...games];
-    
+
     sorted.sort((a, b) => {
       let aValue: string | number | Date | null;
       let bValue: string | number | Date | null;
-      
+
       switch (field) {
         case 'name':
           aValue = String(a['name'] ?? '').toLowerCase();
           bValue = String(b['name'] ?? '').toLowerCase();
           break;
         case 'purchaseDate':
-          aValue = a['purchaseDate'] ? new Date(String(a['purchaseDate'])).getTime() : 0;
-          bValue = b['purchaseDate'] ? new Date(String(b['purchaseDate'])).getTime() : 0;
+          aValue = a['purchaseDate']
+            ? (parseIsoDateToLocalDate(a['purchaseDate'])?.getTime() ?? 0)
+            : 0;
+          bValue = b['purchaseDate']
+            ? (parseIsoDateToLocalDate(b['purchaseDate'])?.getTime() ?? 0)
+            : 0;
           break;
         case 'completionDate':
-          aValue = a['completionDate'] ? new Date(String(a['completionDate'])).getTime() : 0;
-          bValue = b['completionDate'] ? new Date(String(b['completionDate'])).getTime() : 0;
+          aValue = a['completionDate']
+            ? (parseIsoDateToLocalDate(a['completionDate'])?.getTime() ?? 0)
+            : 0;
+          bValue = b['completionDate']
+            ? (parseIsoDateToLocalDate(b['completionDate'])?.getTime() ?? 0)
+            : 0;
           break;
         case 'rating':
           aValue = typeof a['rating'] === 'number' ? a['rating'] : 0;
@@ -105,7 +127,7 @@ export class GamesStore {
           aValue = String(a['name'] ?? '').toLowerCase();
           bValue = String(b['name'] ?? '').toLowerCase();
       }
-      
+
       if (aValue < bValue) {
         return direction === 'asc' ? -1 : 1;
       }
@@ -114,7 +136,7 @@ export class GamesStore {
       }
       return 0;
     });
-    
+
     return sorted;
   }
 
@@ -126,10 +148,13 @@ export class GamesStore {
       return [];
     }
     if (Array.isArray(tags)) {
-      return tags.map(tag => String(tag));
+      return tags.map((tag) => String(tag));
     }
     if (typeof tags === 'string') {
-      return tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+      return tags
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter((tag) => tag.length > 0);
     }
     return [];
   }
@@ -139,9 +164,9 @@ export class GamesStore {
    */
   readonly allTags: Signal<string[]> = computed(() => {
     const allTagsSet = new Set<string>();
-    this.games().forEach(game => {
+    this.games().forEach((game) => {
       const gameTags = this.getGameTags(game['tags']);
-      gameTags.forEach(tag => allTagsSet.add(tag));
+      gameTags.forEach((tag) => allTagsSet.add(tag));
     });
     return Array.from(allTagsSet).sort();
   });
@@ -156,20 +181,22 @@ export class GamesStore {
 
   loadGames(): void {
     this.loading.set(true);
-    this.api.list().then((games) => {
-      return this.games.set(games);
-    })
-    .finally(() => {
-      return this.loading.set(false);
-    });
+    this.api
+      .list()
+      .then((games) => {
+        return this.games.set(games);
+      })
+      .finally(() => {
+        return this.loading.set(false);
+      });
   }
 
   setQuery(query: string): void {
     this.query.set(query);
   }
 
-  setFilters(filters: { 
-    genre?: string; 
+  setFilters(filters: {
+    genre?: string;
     platform?: string;
     rating?: number;
     isBorrowed?: boolean;
@@ -203,5 +230,3 @@ export class GamesStore {
     this.api.delete(id).subscribe(() => this.loadGames());
   }
 }
-
-

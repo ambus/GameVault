@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { ActiveElement, ChartEvent } from 'chart.js';
 import { ChartModule } from 'primeng/chart';
 import { TableModule } from 'primeng/table';
+import { getYearMonthKey, parseIsoDateToLocalDate } from '../../../core/utils/date.utils';
 import { GamesStore } from '../../games/games.store';
 
 @Component({
@@ -34,7 +35,7 @@ import { GamesStore } from '../../games/games.store';
             </ng-template>
             <ng-template pTemplate="body" let-game>
               <tr>
-                <td>{{ game.completionDate | date: 'dd.MM.yyyy' }}</td>
+                <td>{{ game.completionDate | date: 'dd.MM.yyyy' : 'UTC' }}</td>
                 <td>{{ game.name }}</td>
                 <td>{{ game.platform }}</td>
                 <td class="text-right">
@@ -134,12 +135,9 @@ export class AnalysisCompletedComponent {
       // Skip if not completed
       if (!game['completionDate'] || game['status'] !== 'completed') return;
 
-      const date = new Date(game['completionDate'] as string | Date);
+      const key = getYearMonthKey(game['completionDate']);
+      if (!key) return;
 
-      if (isNaN(date.getTime())) return;
-
-      // Format key as YYYY-MM
-      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
       const current = completedGamesByMonth.get(key) || 0;
       completedGamesByMonth.set(key, current + 1);
     });
@@ -170,16 +168,13 @@ export class AnalysisCompletedComponent {
       .games()
       .filter((g) => {
         if (!g['completionDate'] || g['status'] !== 'completed') return false;
-        const date = new Date(g['completionDate'] as string | Date);
-        if (isNaN(date.getTime())) return false;
-
-        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        const key = getYearMonthKey(g['completionDate']);
         return key === month;
       })
       .sort((a, b) => {
         // Sort by completion date desc
-        const dateA = new Date(a['completionDate'] as string | Date).getTime();
-        const dateB = new Date(b['completionDate'] as string | Date).getTime();
+        const dateA = parseIsoDateToLocalDate(a['completionDate'])?.getTime() ?? 0;
+        const dateB = parseIsoDateToLocalDate(b['completionDate'])?.getTime() ?? 0;
         return dateB - dateA;
       });
   });

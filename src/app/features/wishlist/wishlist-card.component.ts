@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { TooltipModule } from 'primeng/tooltip';
+import { formatDisplayDate } from '../../core/utils/date.utils';
 import { WishlistItem } from './wishlist.types';
 
 @Component({
@@ -39,11 +40,7 @@ import { WishlistItem } from './wishlist.types';
         </div>
 
         <div class="game-icons">
-          <span
-            class="icon-wrapper"
-            [pTooltip]="item().platform"
-            tooltipPosition="top"
-          >
+          <span class="icon-wrapper" [pTooltip]="item().platform" tooltipPosition="top">
             @if (isNintendoSwitch(item().platform)) {
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/9/9f/Nintendo-switch-icon.png"
@@ -81,7 +78,7 @@ import { WishlistItem } from './wishlist.types';
           @if (item().releaseDate) {
             <div class="info-row">
               <span class="info-label">Premiera:</span>
-              <span class="info-value">{{ item().releaseDate }}</span>
+              <span class="info-value">{{ formatDate(item().releaseDate) }}</span>
             </div>
           }
 
@@ -177,10 +174,7 @@ import { WishlistItem } from './wishlist.types';
         height: 200px;
         overflow: hidden;
         border-radius: 4px;
-        background-color: var(
-          --color-card-bg-secondary,
-          rgba(255, 255, 255, 0.05)
-        );
+        background-color: var(--color-card-bg-secondary, rgba(255, 255, 255, 0.05));
         display: flex;
         align-items: center;
         justify-content: center;
@@ -240,6 +234,10 @@ export class WishlistCardComponent {
   cardClick = output<WishlistItem>();
   remove = output<string>();
   moveToGames = output<WishlistItem>();
+
+  formatDate(date: unknown): string {
+    return formatDisplayDate(date);
+  }
 
   onCardClick(): void {
     this.cardClick.emit(this.item());

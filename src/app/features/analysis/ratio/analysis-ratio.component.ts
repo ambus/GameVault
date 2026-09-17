@@ -3,6 +3,11 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { ActiveElement, ChartEvent } from 'chart.js';
 import { ChartModule } from 'primeng/chart';
 import { TableModule } from 'primeng/table';
+import {
+  getYearKey,
+  getYearMonthKey,
+  parseIsoDateToLocalDate,
+} from '../../../core/utils/date.utils';
 import { GamesStore } from '../../games/games.store';
 import { Game } from '../../games/games.types';
 
@@ -84,9 +89,8 @@ export class AnalysisRatioComponent {
     games.forEach((game) => {
       // Zakupy: sprawdzamy purchaseDate oraz brak isBorrowedFrom
       if (!game['isBorrowedFrom'] && game['purchaseDate']) {
-        const d = new Date(game['purchaseDate'] as string | Date);
-        if (!isNaN(d.getTime())) {
-          const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        const key = getYearMonthKey(game['purchaseDate']);
+        if (key) {
           if (!map.has(key)) {
             map.set(key, { purchased: [], completed: [] });
           }
@@ -99,9 +103,8 @@ export class AnalysisRatioComponent {
         (game['status'] === 'completed' || Boolean(game['completionDate'])) &&
         game['completionDate']
       ) {
-        const d = new Date(game['completionDate'] as string | Date);
-        if (!isNaN(d.getTime())) {
-          const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        const key = getYearMonthKey(game['completionDate']);
+        if (key) {
           if (!map.has(key)) {
             map.set(key, { purchased: [], completed: [] });
           }
@@ -150,13 +153,13 @@ export class AnalysisRatioComponent {
         periodKey: key,
         displayLabel,
         purchased: [...data.purchased].sort((a, b) => {
-          const tA = new Date(a['purchaseDate'] as string | Date).getTime() || 0;
-          const tB = new Date(b['purchaseDate'] as string | Date).getTime() || 0;
+          const tA = parseIsoDateToLocalDate(a['purchaseDate'])?.getTime() ?? 0;
+          const tB = parseIsoDateToLocalDate(b['purchaseDate'])?.getTime() ?? 0;
           return tB - tA;
         }),
         completed: [...data.completed].sort((a, b) => {
-          const tA = new Date(a['completionDate'] as string | Date).getTime() || 0;
-          const tB = new Date(b['completionDate'] as string | Date).getTime() || 0;
+          const tA = parseIsoDateToLocalDate(a['completionDate'])?.getTime() ?? 0;
+          const tB = parseIsoDateToLocalDate(b['completionDate'])?.getTime() ?? 0;
           return tB - tA;
         }),
         ratioPercent,
@@ -174,9 +177,8 @@ export class AnalysisRatioComponent {
     games.forEach((game) => {
       // Zakupy
       if (!game['isBorrowedFrom'] && game['purchaseDate']) {
-        const d = new Date(game['purchaseDate'] as string | Date);
-        if (!isNaN(d.getTime())) {
-          const key = String(d.getFullYear());
+        const key = getYearKey(game['purchaseDate']);
+        if (key) {
           if (!map.has(key)) {
             map.set(key, { purchased: [], completed: [] });
           }
@@ -189,9 +191,8 @@ export class AnalysisRatioComponent {
         (game['status'] === 'completed' || Boolean(game['completionDate'])) &&
         game['completionDate']
       ) {
-        const d = new Date(game['completionDate'] as string | Date);
-        if (!isNaN(d.getTime())) {
-          const key = String(d.getFullYear());
+        const key = getYearKey(game['completionDate']);
+        if (key) {
           if (!map.has(key)) {
             map.set(key, { purchased: [], completed: [] });
           }
@@ -222,13 +223,13 @@ export class AnalysisRatioComponent {
         periodKey: key,
         displayLabel: `Rok ${key}`,
         purchased: [...data.purchased].sort((a, b) => {
-          const tA = new Date(a['purchaseDate'] as string | Date).getTime() || 0;
-          const tB = new Date(b['purchaseDate'] as string | Date).getTime() || 0;
+          const tA = parseIsoDateToLocalDate(a['purchaseDate'])?.getTime() ?? 0;
+          const tB = parseIsoDateToLocalDate(b['purchaseDate'])?.getTime() ?? 0;
           return tB - tA;
         }),
         completed: [...data.completed].sort((a, b) => {
-          const tA = new Date(a['completionDate'] as string | Date).getTime() || 0;
-          const tB = new Date(b['completionDate'] as string | Date).getTime() || 0;
+          const tA = parseIsoDateToLocalDate(a['completionDate'])?.getTime() ?? 0;
+          const tB = parseIsoDateToLocalDate(b['completionDate'])?.getTime() ?? 0;
           return tB - tA;
         }),
         ratioPercent,

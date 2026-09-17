@@ -232,7 +232,7 @@
                   </ng-template>
                   <ng-template pTemplate="body" let-game>
                     <tr>
-                      <td>{{ game.purchaseDate | date: 'dd.MM.yyyy' }}</td>
+                      <td>{{ game.purchaseDate | date: 'dd.MM.yyyy' : 'UTC' }}</td>
                       <td class="font-medium">{{ game.name }}</td>
                       <td>{{ game.platform || '-' }}</td>
                       <td class="text-right">
@@ -278,7 +278,7 @@
                   </ng-template>
                   <ng-template pTemplate="body" let-game>
                     <tr>
-                      <td>{{ game.completionDate | date: 'dd.MM.yyyy' }}</td>
+                      <td>{{ game.completionDate | date: 'dd.MM.yyyy' : 'UTC' }}</td>
                       <td class="font-medium">{{ game.name }}</td>
                       <td>{{ game.platform || '-' }}</td>
                       <td class="text-right">

@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { ActiveElement, ChartEvent } from 'chart.js';
 import { ChartModule } from 'primeng/chart';
 import { TableModule } from 'primeng/table';
+import { getYearMonthKey, parseIsoDateToLocalDate } from '../../../core/utils/date.utils';
 import { GamesStore } from '../../games/games.store';
 
 @Component({
@@ -36,7 +37,7 @@ import { GamesStore } from '../../games/games.store';
             </ng-template>
             <ng-template pTemplate="body" let-game>
               <tr>
-                <td>{{ game.purchaseDate | date: 'dd.MM.yyyy' }}</td>
+                <td>{{ game.purchaseDate | date: 'dd.MM.yyyy' : 'UTC' }}</td>
                 <td>{{ game.name }}</td>
                 <td>{{ game.platform }}</td>
                 <td class="text-right">
@@ -137,12 +138,11 @@ export class AnalysisExpensesComponent {
       if (!game['purchasePrice'] || !game['purchaseDate']) return;
 
       const price = Number(game['purchasePrice']);
-      const date = new Date(game['purchaseDate'] as string | Date);
+      if (isNaN(price)) return;
 
-      if (isNaN(price) || isNaN(date.getTime())) return;
+      const key = getYearMonthKey(game['purchaseDate']);
+      if (!key) return;
 
-      // Format key as YYYY-MM
-      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
       const current = expensesByMonth.get(key) || 0;
       expensesByMonth.set(key, current + price);
     });
@@ -173,16 +173,13 @@ export class AnalysisExpensesComponent {
       .games()
       .filter((g) => {
         if (!g['purchaseDate']) return false;
-        const date = new Date(g['purchaseDate'] as string | Date);
-        if (isNaN(date.getTime())) return false;
-
-        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        const key = getYearMonthKey(g['purchaseDate']);
         return key === month;
       })
       .sort((a, b) => {
         // Sort by purchase date desc
-        const dateA = new Date(a['purchaseDate'] as string | Date).getTime();
-        const dateB = new Date(b['purchaseDate'] as string | Date).getTime();
+        const dateA = parseIsoDateToLocalDate(a['purchaseDate'])?.getTime() ?? 0;
+        const dateB = parseIsoDateToLocalDate(b['purchaseDate'])?.getTime() ?? 0;
         return dateB - dateA;
       });
   });

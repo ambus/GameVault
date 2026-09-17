@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 import { CardModule } from 'primeng/card';
 import { SkeletonModule } from 'primeng/skeleton';
 import { Tooltip } from 'primeng/tooltip';
+import { formatDisplayDate } from '../../../core/utils/date.utils';
 import { Game } from '../games.types';
 
 @Component({
@@ -129,22 +130,7 @@ export class GameCardComponent {
   }
 
   formatDate(date: unknown): string {
-    if (!date) {
-      return '';
-    }
-    try {
-      const dateObj = typeof date === 'string' ? new Date(date) : (date as Date);
-      if (isNaN(dateObj.getTime())) {
-        return String(date);
-      }
-      return dateObj.toLocaleDateString('pl-PL', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      });
-    } catch {
-      return String(date);
-    }
+    return formatDisplayDate(date);
   }
 
   getImageUrl(value: unknown): string {

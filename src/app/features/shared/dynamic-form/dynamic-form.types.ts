@@ -15,6 +15,19 @@ export interface DynamicFieldOption {
   label: string;
   value: unknown;
 }
+export interface DynamicFieldCondition {
+  field: string;
+  value?: boolean | string | number | (boolean | string | number)[];
+  operator?: 'EQUALS' | 'NOT_EQUALS' | 'NOT_EMPTY' | 'EMPTY';
+}
+
+export type DynamicFieldShowWhen =
+  | DynamicFieldCondition
+  | DynamicFieldCondition[]
+  | {
+      conditions: DynamicFieldCondition[];
+      logic?: 'AND' | 'OR';
+    };
 
 export interface DynamicFieldConfig {
   name: string;
@@ -25,18 +38,5 @@ export interface DynamicFieldConfig {
   validators?: ValidatorFn[];
   min?: number;
   max?: number;
-  showWhen?:
-    | {
-        field: string;
-        value?: boolean | string | number | (boolean | string | number)[];
-        operator?: 'EQUALS' | 'NOT_EQUALS' | 'NOT_EMPTY' | 'EMPTY';
-      }
-    | {
-        conditions: {
-          field: string;
-          value?: boolean | string | number | (boolean | string | number)[];
-          operator?: 'EQUALS' | 'NOT_EQUALS' | 'NOT_EMPTY' | 'EMPTY';
-        }[];
-        logic?: 'AND' | 'OR';
-      };
+  showWhen?: DynamicFieldShowWhen;
 }

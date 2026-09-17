@@ -19,7 +19,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { RatingModule } from 'primeng/rating';
 import { SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
-import { DynamicFieldConfig } from './dynamic-form.types';
+import { formatDateToIsoDate, parseIsoDateToLocalDate } from '../../../core/utils/date.utils';
+import { DynamicFieldCondition, DynamicFieldConfig } from './dynamic-form.types';
 @Component({
   standalone: true,
   selector: 'app-dynamic-form',
@@ -56,7 +57,7 @@ export class DynamicFormComponent {
       return true;
     }
 
-    let conditions: any[] = [];
+    let conditions: DynamicFieldCondition[] = [];
     let logic: 'AND' | 'OR' = 'AND';
 
     if (Array.isArray(field.showWhen)) {
@@ -69,7 +70,7 @@ export class DynamicFormComponent {
       conditions = [field.showWhen];
     }
 
-    const checkCondition = (condition: any) => {
+    const checkCondition = (condition: DynamicFieldCondition) => {
       const control = this.form.get(condition.field);
       if (!control) {
         return false;
@@ -91,9 +92,19 @@ export class DynamicFormComponent {
           }
           return value !== targetValue;
         case 'NOT_EMPTY':
-          return value !== null && value !== undefined && value !== '' && (!Array.isArray(value) || value.length > 0);
+          return (
+            value !== null &&
+            value !== undefined &&
+            value !== '' &&
+            (!Array.isArray(value) || value.length > 0)
+          );
         case 'EMPTY':
-          return value === null || value === undefined || value === '' || (Array.isArray(value) && value.length === 0);
+          return (
+            value === null ||
+            value === undefined ||
+            value === '' ||
+            (Array.isArray(value) && value.length === 0)
+          );
         default:
           return false;
       }
@@ -126,7 +137,7 @@ export class DynamicFormComponent {
             typeof initial[field.name] === 'string' &&
             initial[field.name]
           ) {
-            initial[field.name] = new Date(initial[field.name] as string);
+            initial[field.name] = parseIsoDateToLocalDate(initial[field.name]);
           }
 
           // Aktualizacja wartości rating
@@ -173,7 +184,7 @@ export class DynamicFormComponent {
 
       // Konwersja stringa daty na Date dla PrimeNG Calendar
       if (field.type === 'date' && typeof value === 'string' && value) {
-        value = new Date(value);
+        value = parseIsoDateToLocalDate(value);
       }
 
       controls[field.name] = [value, field.validators ?? []];
@@ -207,7 +218,7 @@ export class DynamicFormComponent {
     // Subskrypcja valueChanges dla pól z warunkowym wyświetlaniem
     for (const field of this.fields()) {
       if (field.showWhen) {
-        let conditions: any[] = [];
+        let conditions: DynamicFieldCondition[] = [];
         if (Array.isArray(field.showWhen)) {
           conditions = field.showWhen;
         } else if ('conditions' in field.showWhen) {
@@ -238,9 +249,16 @@ export class DynamicFormComponent {
 
     // Konwersja Date na string dla pól typu date
     for (const field of this.fields()) {
-      if (field.type === 'date' && formValue[field.name] instanceof Date) {
-        const date = formValue[field.name] as Date;
-        formValue[field.name] = date.toISOString().split('T')[0];
+      if (field.type === 'date') {
+        const val = formValue[field.name];
+        if (val instanceof Date) {
+          formValue[field.name] = !isNaN(val.getTime()) ? formatDateToIsoDate(val) : null;
+        } else if (typeof val === 'string' && val.trim()) {
+          const parsed = parseIsoDateToLocalDate(val);
+          formValue[field.name] = parsed ? formatDateToIsoDate(parsed) : null;
+        } else if (!val) {
+          formValue[field.name] = null;
+        }
       }
 
       // Konwersja tablicy tagów na string (opcjonalnie, można też zostawić jako tablicę)
