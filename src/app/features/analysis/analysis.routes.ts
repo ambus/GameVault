@@ -23,6 +23,11 @@ export const ANALYSIS_ROUTES: Routes = [
             (m) => m.AnalysisCompletedComponent,
           ),
       },
+      {
+        path: 'ratio',
+        loadComponent: () =>
+          import('./ratio/analysis-ratio.component').then((m) => m.AnalysisRatioComponent),
+      },
     ],
   },
 ];

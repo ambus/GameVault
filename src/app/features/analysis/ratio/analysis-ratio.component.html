@@ -1,0 +1,401 @@
+<div class="ratio-analysis-container">
+  <header class="page-header">
+    <h1 class="page-title">Stosunek gier ukończonych do zakupionych</h1>
+    <p class="page-subtitle">
+      Analiza efektywności ogrywania biblioteki gier w danym miesiącu, roku oraz od początku.
+    </p>
+  </header>
+
+  <!-- Sekcja KPI: Całościowy bilans biblioteki (Od początku) -->
+  <section class="kpi-grid" aria-label="Główne wskaźniki od początku">
+    <div class="kpi-card">
+      <div class="kpi-icon-wrapper kpi-icon-purchased">
+        <i class="pi pi-shopping-cart"></i>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-label">Zakupione gry (łącznie)</span>
+        <span class="kpi-value">{{ kpiSummary().totalPurchased }}</span>
+        <span class="kpi-hint">gry w bibliotece</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon-wrapper kpi-icon-completed">
+        <i class="pi pi-check-circle"></i>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-label">Ukończone gry (łącznie)</span>
+        <span class="kpi-value">{{ kpiSummary().totalCompleted }}</span>
+        <span class="kpi-hint">ukończonych tytułów</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon-wrapper kpi-icon-ratio">
+        <i class="pi pi-percentage"></i>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-label">Wskaźnik ukończenia</span>
+        <span class="kpi-value">{{ kpiSummary().overallRatioText }}</span>
+        <span class="kpi-hint"
+          >{{ kpiSummary().totalCompleted }} z {{ kpiSummary().totalPurchased }} gier</span
+        >
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div
+        class="kpi-icon-wrapper"
+        [class.kpi-icon-positive]="kpiSummary().delta >= 0"
+        [class.kpi-icon-negative]="kpiSummary().delta < 0"
+      >
+        <i
+          class="pi"
+          [class.pi-arrow-up]="kpiSummary().delta > 0"
+          [class.pi-minus]="kpiSummary().delta === 0"
+          [class.pi-arrow-down]="kpiSummary().delta < 0"
+        ></i>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-label">Bilans biblioteki</span>
+        <span
+          class="kpi-value"
+          [class.text-positive]="kpiSummary().delta >= 0"
+          [class.text-negative]="kpiSummary().delta < 0"
+        >
+          {{ kpiSummary().delta > 0 ? '+' : '' }}{{ kpiSummary().delta }}
+        </span>
+        <span class="kpi-hint">
+          @if (kpiSummary().backlogCount > 0) {
+            {{ kpiSummary().backlogCount }} gier czeka w kupce wstydu
+          } @else {
+            Kupka wstydu opanowana!
+          }
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Przełącznik zakresu analizy (Miesiąc / Rok / Od początku) -->
+  <section class="period-controls-section">
+    <div class="period-controls-header">
+      <span class="control-section-label">Zakres analizy:</span>
+      <div class="view-mode-toggle" role="tablist" aria-label="Wybór zakresu analizy">
+        <button
+          type="button"
+          role="tab"
+          class="mode-btn"
+          [class.active]="viewMode() === 'monthly'"
+          [attr.aria-selected]="viewMode() === 'monthly'"
+          (click)="setViewMode('monthly')"
+        >
+          <i class="pi pi-calendar"></i>
+          <span>W danym miesiącu</span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          class="mode-btn"
+          [class.active]="viewMode() === 'yearly'"
+          [attr.aria-selected]="viewMode() === 'yearly'"
+          (click)="setViewMode('yearly')"
+        >
+          <i class="pi pi-calendar-plus"></i>
+          <span>W danym roku</span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          class="mode-btn"
+          [class.active]="viewMode() === 'all-time'"
+          [attr.aria-selected]="viewMode() === 'all-time'"
+          (click)="setViewMode('all-time')"
+        >
+          <i class="pi pi-chart-pie"></i>
+          <span>Od początku</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Wykres i prezentacja danych -->
+  @if (viewMode() === 'monthly' || viewMode() === 'yearly') {
+    <section class="chart-card">
+      <div class="chart-header">
+        <h2>
+          {{
+            viewMode() === 'monthly'
+              ? 'Porównanie miesięczne: Zakupione vs Ukończone'
+              : 'Porównanie roczne: Zakupione vs Ukończone'
+          }}
+        </h2>
+        <span class="chart-hint"
+          >Kliknij słupek na wykresie, aby zobaczyć szczegóły danego okresu</span
+        >
+      </div>
+
+      @if (currentBarChartData().labels && currentBarChartData().labels.length > 0) {
+        <div class="chart-wrapper">
+          <p-chart type="bar" [data]="currentBarChartData()" [options]="barChartOptions"></p-chart>
+        </div>
+      } @else {
+        <p class="empty-state">
+          Brak zarejestrowanych danych zakupów ani ukończeń gier w wybranym ujęciu.
+        </p>
+      }
+    </section>
+
+    <!-- Panel szczegółów dla wybranego miesiąca/roku (po kliknięciu w słupek na wykresie) -->
+    @if (activePeriodGroup(); as period) {
+      <section class="details-section" aria-label="Szczegóły wybranego okresu">
+        <div class="details-header-row">
+          <div class="details-title-group">
+            <h2>Szczegóły dla: {{ period.displayLabel }}</h2>
+            <span class="period-badge"> Wskaźnik: {{ period.ratioText }} </span>
+          </div>
+          <button
+            type="button"
+            class="btn-close"
+            (click)="clearSelectedPeriod()"
+            aria-label="Zamknij szczegóły"
+          >
+            <i class="pi pi-times"></i>
+            <span>Zamknij</span>
+          </button>
+        </div>
+
+        <!-- Mini podsumowanie wybranego okresu -->
+        <div class="period-summary-row">
+          <div class="summary-pill pill-purchased">
+            <i class="pi pi-shopping-cart"></i>
+            <span
+              >Zakupione: <strong>{{ period.purchased.length }}</strong></span
+            >
+          </div>
+          <div class="summary-pill pill-completed">
+            <i class="pi pi-check-circle"></i>
+            <span
+              >Ukończone: <strong>{{ period.completed.length }}</strong></span
+            >
+          </div>
+          <div class="summary-pill pill-ratio">
+            <i class="pi pi-percentage"></i>
+            <span
+              >Stosunek ukończonych do zakupionych: <strong>{{ period.ratioText }}</strong></span
+            >
+          </div>
+          <div
+            class="summary-pill"
+            [class.pill-positive]="period.delta >= 0"
+            [class.pill-negative]="period.delta < 0"
+          >
+            <i
+              class="pi"
+              [class.pi-arrow-up]="period.delta > 0"
+              [class.pi-arrow-down]="period.delta < 0"
+              [class.pi-minus]="period.delta === 0"
+            ></i>
+            <span>
+              Bilans: <strong>{{ period.delta > 0 ? '+' : '' }}{{ period.delta }}</strong> ({{
+                period.delta >= 0 ? 'nadwyżka ukończeń' : 'wzrost backlogu'
+              }})
+            </span>
+          </div>
+        </div>
+
+        <!-- Tabele gier: Zakupione oraz Ukończone -->
+        <div class="tables-grid">
+          <!-- Zakupione w tym okresie -->
+          <div class="table-card">
+            <div class="table-card-header">
+              <div class="table-title">
+                <i class="pi pi-shopping-cart text-amber"></i>
+                <h3>Gry zakupione ({{ period.purchased.length }})</h3>
+              </div>
+            </div>
+
+            @if (period.purchased.length > 0) {
+              <div class="table-responsive">
+                <p-table
+                  [value]="period.purchased"
+                  styleClass="p-datatable-sm"
+                  [paginator]="period.purchased.length > 5"
+                  [rows]="5"
+                >
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th>Data</th>
+                      <th>Tytuł</th>
+                      <th>Platforma</th>
+                      <th class="text-right">Cena</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-game>
+                    <tr>
+                      <td>{{ game.purchaseDate | date: 'dd.MM.yyyy' }}</td>
+                      <td class="font-medium">{{ game.name }}</td>
+                      <td>{{ game.platform || '-' }}</td>
+                      <td class="text-right">
+                        @if (game.purchasePrice !== undefined && game.purchasePrice !== null) {
+                          {{ game.purchasePrice | currency: 'PLN' : 'symbol' : '1.2-2' }}
+                        } @else {
+                          -
+                        }
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            } @else {
+              <p class="table-empty">Brak zakupionych gier w tym okresie.</p>
+            }
+          </div>
+
+          <!-- Ukończone w tym okresie -->
+          <div class="table-card">
+            <div class="table-card-header">
+              <div class="table-title">
+                <i class="pi pi-check-circle text-emerald"></i>
+                <h3>Gry ukończone ({{ period.completed.length }})</h3>
+              </div>
+            </div>
+
+            @if (period.completed.length > 0) {
+              <div class="table-responsive">
+                <p-table
+                  [value]="period.completed"
+                  styleClass="p-datatable-sm"
+                  [paginator]="period.completed.length > 5"
+                  [rows]="5"
+                >
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th>Data</th>
+                      <th>Tytuł</th>
+                      <th>Platforma</th>
+                      <th class="text-right">Ocena</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-game>
+                    <tr>
+                      <td>{{ game.completionDate | date: 'dd.MM.yyyy' }}</td>
+                      <td class="font-medium">{{ game.name }}</td>
+                      <td>{{ game.platform || '-' }}</td>
+                      <td class="text-right">
+                        @if (game.rating !== undefined && game.rating !== null) {
+                          <span class="rating-badge">{{ game.rating }}/10</span>
+                        } @else {
+                          -
+                        }
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            } @else {
+              <p class="table-empty">Brak ukończonych gier w tym okresie.</p>
+            }
+          </div>
+        </div>
+      </section>
+    }
+  } @else {
+    <!-- Widok "Od początku" (All-time) -->
+    <section class="all-time-section">
+      <div class="all-time-grid">
+        <!-- Wykres pierścieniowy -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2>Stan biblioteki od początku</h2>
+            <span class="chart-hint">Ukończone vs nieukończone gry zakupione</span>
+          </div>
+          <div class="doughnut-wrapper">
+            <p-chart
+              type="doughnut"
+              [data]="allTimeDoughnutData()"
+              [options]="doughnutChartOptions"
+            ></p-chart>
+          </div>
+        </div>
+
+        <!-- Podsumowanie statystyczne -->
+        <div class="chart-card stats-breakdown-card">
+          <div class="chart-header">
+            <h2>Podsumowanie ogólne</h2>
+          </div>
+          <div class="breakdown-list">
+            <div class="breakdown-item">
+              <span class="breakdown-label">Wszystkie zakupione gry:</span>
+              <span class="breakdown-val font-semibold">{{ kpiSummary().totalPurchased }}</span>
+            </div>
+            <div class="breakdown-item">
+              <span class="breakdown-label">Ukończone gry ogółem:</span>
+              <span class="breakdown-val text-emerald font-semibold">{{
+                kpiSummary().totalCompleted
+              }}</span>
+            </div>
+            <div class="breakdown-item">
+              <span class="breakdown-label">Zakupione, jeszcze nieukończone:</span>
+              <span class="breakdown-val text-amber font-semibold">{{
+                kpiSummary().backlogCount
+              }}</span>
+            </div>
+            <div class="breakdown-item">
+              <span class="breakdown-label">Wskaźnik ukończenia biblioteki:</span>
+              <span class="breakdown-val font-bold">{{ kpiSummary().overallRatioText }}</span>
+            </div>
+            <div class="breakdown-item">
+              <span class="breakdown-label">Bilans (ukończone minus zakupione):</span>
+              <span
+                class="breakdown-val font-bold"
+                [class.text-positive]="kpiSummary().delta >= 0"
+                [class.text-negative]="kpiSummary().delta < 0"
+              >
+                {{ kpiSummary().delta > 0 ? '+' : '' }}{{ kpiSummary().delta }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabela zbiorcza rok po roku -->
+      <div class="table-card mt-6">
+        <div class="table-card-header">
+          <div class="table-title">
+            <i class="pi pi-list"></i>
+            <h3>Zestawienie roczne od początku</h3>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <p-table [value]="yearlySummaryList()" styleClass="p-datatable-sm">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Rok</th>
+                <th class="text-right">Zakupione</th>
+                <th class="text-right">Ukończone</th>
+                <th class="text-right">Stosunek ukończenia</th>
+                <th class="text-right">Bilans roku</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-row>
+              <tr>
+                <td class="font-semibold">{{ row.displayLabel }}</td>
+                <td class="text-right">{{ row.purchased.length }}</td>
+                <td class="text-right text-emerald">{{ row.completed.length }}</td>
+                <td class="text-right font-medium">{{ row.ratioText }}</td>
+                <td
+                  class="text-right font-semibold"
+                  [class.text-positive]="row.delta >= 0"
+                  [class.text-negative]="row.delta < 0"
+                >
+                  {{ row.delta > 0 ? '+' : '' }}{{ row.delta }}
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    </section>
+  }
+</div>

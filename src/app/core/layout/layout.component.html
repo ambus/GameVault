@@ -38,6 +38,12 @@
             <span>Ukończone gry</span>
           </a>
         </li>
+        <li>
+          <a routerLink="/analysis/ratio" routerLinkActive="active" class="pl-4">
+            <i class="pi pi-chart-line"></i>
+            <span>Ukończone vs Zakupione</span>
+          </a>
+        </li>
       </ul>
     </aside>
 
@@ -89,6 +95,17 @@
                 >
                   <i class="pi pi-check-circle"></i>
                   <span>Ukończone gry</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  routerLink="/analysis/ratio"
+                  routerLinkActive="active"
+                  (click)="sidebarVisible.set(false)"
+                  class="pl-4"
+                >
+                  <i class="pi pi-chart-line"></i>
+                  <span>Ukończone vs Zakupione</span>
                 </a>
               </li>
             </ul>
