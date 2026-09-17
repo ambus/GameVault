@@ -1,18 +1,41 @@
-<p-card
-  [styleClass]="'game-card' + (game()?.isBorrowedFrom ? ' borrowed-from' : '')"
-  (click)="onCardClick()"
->
+<p-card [styleClass]="cardClasses()" (click)="onCardClick()">
   <div class="game-card-content relative overflow-hidden">
     @let gameData = game();
-    @if (gameData?.isBorrowedFrom) {
-      <div class="borrowed-badge">
-        <i class="pi pi-share-alt mr-1"></i>
+    @let completed = isCompleted();
+    @let borrowed = gameData?.isBorrowedFrom;
+
+    @if (borrowed && completed) {
+      <div class="borrowed-badge badge-top-left">
         <span>POŻYCZONA</span>
       </div>
+      <div class="completed-badge badge-top-right">
+        <span>UKOŃCZONA</span>
+      </div>
+    } @else if (borrowed) {
+      <div class="borrowed-badge badge-top-right">
+        <span>POŻYCZONA</span>
+      </div>
+    } @else if (completed) {
+      <div class="completed-badge badge-top-right">
+        <span>UKOŃCZONA</span>
+      </div>
     }
+
     @if (gameData) {
-      <h3 class="game-title">{{ gameData.name }}</h3>
-      
+      <h3 class="game-title">
+        <span>{{ gameData.name }}</span>
+        @if (completed) {
+          <i
+            class="pi pi-check-circle completed-title-icon"
+            [pTooltip]="
+              'Gra ukończona' +
+              (gameData.completionDate ? ' (' + formatDate(gameData.completionDate) + ')' : '')
+            "
+            tooltipPosition="top"
+          ></i>
+        }
+      </h3>
+
       <div class="game-icons">
         <span
           class="icon-wrapper"
@@ -20,14 +43,14 @@
           tooltipPosition="top"
         >
           @if (isNintendoSwitch(gameData.platform)) {
-            <img 
-              src="https://upload.wikimedia.org/wikipedia/commons/9/9f/Nintendo-switch-icon.png" 
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/9/9f/Nintendo-switch-icon.png"
               alt="Nintendo Switch"
               class="nintendo-switch-icon"
             />
           } @else if (isNintendoSwitch2(gameData.platform)) {
-            <img 
-              src="https://upload.wikimedia.org/wikipedia/commons/c/c9/Nintendo_Switch_2_logo.svg" 
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/c/c9/Nintendo_Switch_2_logo.svg"
               alt="Nintendo Switch 2"
               class="nintendo-switch-icon"
             />
@@ -52,6 +75,18 @@
             (error)="onImageError($event)"
             loading="lazy"
           />
+          @if (completed) {
+            <div
+              class="cover-completed-badge"
+              [pTooltip]="
+                'Ukończona' +
+                (gameData.completionDate ? ' (' + formatDate(gameData.completionDate) + ')' : '')
+              "
+              tooltipPosition="top"
+            >
+              <i class="pi pi-check"></i>
+            </div>
+          }
         </div>
       }
 
@@ -59,13 +94,31 @@
         @if (gameData.status) {
           <div class="info-row">
             <span class="info-label">Status:</span>
-            <span class="info-value">{{ getStatusLabel(gameData.status) }}</span>
+            <span class="info-value">
+              @if (completed) {
+                <span class="status-badge-completed">
+                  <i class="pi pi-check-circle"></i>
+                  {{ getStatusLabel(gameData.status) }}
+                </span>
+              } @else {
+                {{ getStatusLabel(gameData.status) }}
+              }
+            </span>
+          </div>
+        }
+
+        @if (completed && gameData.completionDate) {
+          <div class="info-row">
+            <span class="info-label">Ukończono:</span>
+            <span class="info-value">{{ formatDate(gameData.completionDate) }}</span>
           </div>
         }
 
         @if (gameData.purchaseDate) {
           <div class="info-row">
-            <span class="info-label">{{ gameData.isBorrowedFrom ? 'Data pożyczenia:' : 'Data zakupu:' }}</span>
+            <span class="info-label">{{
+              gameData.isBorrowedFrom ? 'Data pożyczenia:' : 'Data zakupu:'
+            }}</span>
             <span class="info-value">{{ formatDate(gameData.purchaseDate) }}</span>
           </div>
         }
@@ -77,7 +130,11 @@
           </div>
         }
 
-        @if (gameData.status === 'completed' && gameData.playtime !== null && gameData.playtime !== undefined) {
+        @if (
+          gameData.status === 'completed' &&
+          gameData.playtime !== null &&
+          gameData.playtime !== undefined
+        ) {
           <div class="info-row">
             <span class="info-label">Czas przejścia:</span>
             <span class="info-value">{{ formatPlaytime(gameData.playtime) }}</span>
@@ -110,11 +167,11 @@
         }
       </div>
 
-        <div class="game-tags">
-          @for (tag of getTags(gameData.tags); track tag) {
-            <span class="tag">{{ tag }}</span>
-          }
-        </div>
+      <div class="game-tags">
+        @for (tag of getTags(gameData.tags); track tag) {
+          <span class="tag">{{ tag }}</span>
+        }
+      </div>
     } @else {
       <p-skeleton width="100%" height="1.5rem" class="mb-2"></p-skeleton>
       <p-skeleton width="60%" height="1rem" class="mb-2"></p-skeleton>
@@ -122,4 +179,3 @@
     }
   </div>
 </p-card>
-
