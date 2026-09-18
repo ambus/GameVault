@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { WishlistCardComponent } from './wishlist-card.component';
 import { WishlistStore } from './wishlist.store';
 import { WishlistItem } from './wishlist.types';
@@ -118,6 +118,7 @@ export class WishlistListComponent {
           coverImage: item.coverImage,
           comment: item.comment,
           version: item.distributionForm,
+          releaseDate: item.releaseDate,
         },
       },
     });

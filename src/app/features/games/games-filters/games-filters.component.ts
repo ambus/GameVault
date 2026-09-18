@@ -1,11 +1,11 @@
 import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    computed,
-    effect,
-    inject,
-    signal
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AutoCompleteModule } from 'primeng/autocomplete';
@@ -23,13 +23,13 @@ interface FilterOption {
  * Pobiera opcje dla danego pola z schema
  */
 function getOptionsFromSchema(fieldName: string): FilterOption[] {
-  const field = GAME_FORM_FIELDS.find(f => f.name === fieldName);
+  const field = GAME_FORM_FIELDS.find((f) => f.name === fieldName);
   if (!field || !field.options) {
     return [];
   }
-  return field.options.map(opt => ({
+  return field.options.map((opt) => ({
     label: opt.label,
-    value: opt.value as string | number | boolean | null
+    value: opt.value as string | number | boolean | null,
   }));
 }
 
@@ -44,7 +44,7 @@ function getRatingOptions(): FilterOption[] {
     { label: '7+', value: 7 },
     { label: '8+', value: 8 },
     { label: '9+', value: 9 },
-    { label: '10', value: 10 }
+    { label: '10', value: 10 },
   ];
 }
 
@@ -55,7 +55,7 @@ function getIsBorrowedOptions(): FilterOption[] {
   return [
     { label: 'Wszystkie', value: null },
     { label: 'Pożyczona komuś', value: true },
-    { label: 'Nie pożyczona komuś', value: false }
+    { label: 'Nie pożyczona komuś', value: false },
   ];
 }
 
@@ -66,7 +66,7 @@ function getIsBorrowedFromOptions(): FilterOption[] {
   return [
     { label: 'Wszystkie', value: null },
     { label: 'Pożyczona od kogoś', value: true },
-    { label: 'Własna (nie pożyczona)', value: false }
+    { label: 'Własna (nie pożyczona)', value: false },
   ];
 }
 
@@ -74,10 +74,7 @@ function getIsBorrowedFromOptions(): FilterOption[] {
  * Dodaje opcję "Wszystkie" na początku listy opcji
  */
 function addAllOption(options: FilterOption[], allLabel: string): FilterOption[] {
-  return [
-    { label: allLabel, value: null },
-    ...options
-  ];
+  return [{ label: allLabel, value: null }, ...options];
 }
 
 @Component({
@@ -86,7 +83,7 @@ function addAllOption(options: FilterOption[], allLabel: string): FilterOption[]
   imports: [SelectModule, ButtonModule, FormsModule, AutoCompleteModule],
   templateUrl: './games-filters.component.html',
   styleUrl: './games-filters.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GamesFiltersComponent {
   private readonly store = inject(GamesStore);
@@ -96,20 +93,11 @@ export class GamesFiltersComponent {
   readonly currentSortBy = computed(() => this.store.sortBy());
 
   // Pobieramy opcje ze schema i dodajemy opcję "Wszystkie"
-  readonly genreOptions = addAllOption(
-    getOptionsFromSchema('genre'),
-    'Wszystkie gatunki'
-  );
+  readonly genreOptions = addAllOption(getOptionsFromSchema('genre'), 'Wszystkie gatunki');
 
-  readonly platformOptions = addAllOption(
-    getOptionsFromSchema('platform'),
-    'Wszystkie platformy'
-  );
+  readonly platformOptions = addAllOption(getOptionsFromSchema('platform'), 'Wszystkie platformy');
 
-  readonly statusOptions = addAllOption(
-    getOptionsFromSchema('status'),
-    'Wszystkie statusy'
-  );
+  readonly statusOptions = addAllOption(getOptionsFromSchema('status'), 'Wszystkie statusy');
 
   // Rating i isBorrowed nie mają opcji w schema, więc tworzymy je programatycznie
   readonly ratingOptions = getRatingOptions();
@@ -135,14 +123,15 @@ export class GamesFiltersComponent {
     { label: 'Nazwa', value: 'name' },
     { label: 'Data zakupu', value: 'purchaseDate' },
     { label: 'Data ukończenia', value: 'completionDate' },
+    { label: 'Data premiery', value: 'releaseDate' },
     { label: 'Ocena', value: 'rating' },
     { label: 'Status', value: 'status' },
-    { label: 'Platforma', value: 'platform' }
+    { label: 'Platforma', value: 'platform' },
   ];
 
   readonly sortDirectionOptions = [
     { label: 'Rosnąco', value: 'asc' },
-    { label: 'Malejąco', value: 'desc' }
+    { label: 'Malejąco', value: 'desc' },
   ];
 
   constructor() {
@@ -228,13 +217,13 @@ export class GamesFiltersComponent {
     const genreValue = genre as string | null | undefined;
     const currentFilters = this.store.filters();
     const newFilters = { ...currentFilters };
-    
+
     if (genreValue === null || genreValue === undefined) {
       delete newFilters.genre;
     } else {
       newFilters.genre = genreValue;
     }
-    
+
     this.store.setFilters(newFilters);
     this.cdr.markForCheck();
   }
@@ -243,13 +232,13 @@ export class GamesFiltersComponent {
     const platformValue = platform as string | null | undefined;
     const currentFilters = this.store.filters();
     const newFilters = { ...currentFilters };
-    
+
     if (platformValue === null || platformValue === undefined) {
       delete newFilters.platform;
     } else {
       newFilters.platform = platformValue;
     }
-    
+
     this.store.setFilters(newFilters);
     this.cdr.markForCheck();
   }
@@ -258,13 +247,13 @@ export class GamesFiltersComponent {
     const ratingValue = rating as number | null | undefined;
     const currentFilters = this.store.filters();
     const newFilters = { ...currentFilters };
-    
+
     if (ratingValue === null || ratingValue === undefined) {
       delete newFilters.rating;
     } else {
       newFilters.rating = ratingValue;
     }
-    
+
     this.store.setFilters(newFilters);
     this.cdr.markForCheck();
   }
@@ -273,13 +262,13 @@ export class GamesFiltersComponent {
     const isBorrowedValue = isBorrowed as boolean | null | undefined;
     const currentFilters = this.store.filters();
     const newFilters = { ...currentFilters };
-    
+
     if (isBorrowedValue === null || isBorrowedValue === undefined) {
       delete newFilters.isBorrowed;
     } else {
       newFilters.isBorrowed = isBorrowedValue;
     }
-    
+
     this.store.setFilters(newFilters);
     this.cdr.markForCheck();
   }
@@ -288,13 +277,13 @@ export class GamesFiltersComponent {
     const isBorrowedFromValue = isBorrowedFrom as boolean | null | undefined;
     const currentFilters = this.store.filters();
     const newFilters = { ...currentFilters };
-    
+
     if (isBorrowedFromValue === null || isBorrowedFromValue === undefined) {
       delete newFilters.isBorrowedFrom;
     } else {
       newFilters.isBorrowedFrom = isBorrowedFromValue;
     }
-    
+
     this.store.setFilters(newFilters);
     this.cdr.markForCheck();
   }
@@ -303,13 +292,13 @@ export class GamesFiltersComponent {
     const statusValue = status as string | null | undefined;
     const currentFilters = this.store.filters();
     const newFilters = { ...currentFilters };
-    
+
     if (statusValue === null || statusValue === undefined) {
       delete newFilters.status;
     } else {
       newFilters.status = statusValue;
     }
-    
+
     this.store.setFilters(newFilters);
     this.cdr.markForCheck();
   }
@@ -317,13 +306,13 @@ export class GamesFiltersComponent {
   onTagsChange(tags: string[]): void {
     const currentFilters = this.store.filters();
     const newFilters = { ...currentFilters };
-    
+
     if (!tags || tags.length === 0) {
       delete newFilters.tags;
     } else {
       newFilters.tags = tags;
     }
-    
+
     this.store.setFilters(newFilters);
     this.cdr.markForCheck();
   }
@@ -332,13 +321,12 @@ export class GamesFiltersComponent {
     const query = event.query?.toLowerCase() || '';
     const allTags = this.availableTags();
     const currentTags = this.selectedTagsValue || [];
-    const existingTags = currentTags.map(tag => tag.toLowerCase());
+    const existingTags = currentTags.map((tag) => tag.toLowerCase());
 
     // Filtruj tagi na podstawie zapytania i wyklucz już wybrane
     const suggestions = allTags
-      .filter(tag => 
-        tag.toLowerCase().includes(query) && 
-        !existingTags.includes(tag.toLowerCase())
+      .filter(
+        (tag) => tag.toLowerCase().includes(query) && !existingTags.includes(tag.toLowerCase()),
       )
       .slice(0, 10);
 
@@ -368,7 +356,14 @@ export class GamesFiltersComponent {
 
   readonly hasActiveFilters = computed(() => {
     const filters = this.currentFilters();
-    return !!(filters.genre || filters.platform || filters.rating !== undefined || filters.isBorrowed !== undefined || filters.isBorrowedFrom !== undefined || filters.status || (filters.tags && filters.tags.length > 0));
+    return !!(
+      filters.genre ||
+      filters.platform ||
+      filters.rating !== undefined ||
+      filters.isBorrowed !== undefined ||
+      filters.isBorrowedFrom !== undefined ||
+      filters.status ||
+      (filters.tags && filters.tags.length > 0)
+    );
   });
 }
-

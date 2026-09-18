@@ -111,6 +111,14 @@ export class GamesStore {
             ? (parseIsoDateToLocalDate(b['completionDate'])?.getTime() ?? 0)
             : 0;
           break;
+        case 'releaseDate':
+          aValue = a['releaseDate']
+            ? (parseIsoDateToLocalDate(a['releaseDate'] as string)?.getTime() ?? 0)
+            : 0;
+          bValue = b['releaseDate']
+            ? (parseIsoDateToLocalDate(b['releaseDate'] as string)?.getTime() ?? 0)
+            : 0;
+          break;
         case 'rating':
           aValue = typeof a['rating'] === 'number' ? a['rating'] : 0;
           bValue = typeof b['rating'] === 'number' ? b['rating'] : 0;

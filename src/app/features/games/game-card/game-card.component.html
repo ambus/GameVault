@@ -107,6 +107,13 @@
           </div>
         }
 
+        @if (gameData.status === 'preordered' && gameData.releaseDate) {
+          <div class="info-row">
+            <span class="info-label">Data premiery:</span>
+            <span class="info-value">{{ formatDate(gameData.releaseDate) }}</span>
+          </div>
+        }
+
         @if (completed && gameData.completionDate) {
           <div class="info-row">
             <span class="info-label">Ukończono:</span>

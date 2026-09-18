@@ -8,6 +8,7 @@ export interface Game {
   description?: string;
   status?: string;
   completionDate?: string;
+  releaseDate?: string;
   playtime?: number;
   comment?: string;
   tags?: string[];

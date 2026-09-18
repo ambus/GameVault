@@ -167,6 +167,15 @@ export const GAME_FORM_FIELDS: DynamicFieldConfig[] = [
     ],
   },
   {
+    name: 'releaseDate',
+    type: 'date',
+    label: 'Data premiery',
+    showWhen: {
+      field: 'status',
+      value: 'preordered',
+    },
+  },
+  {
     name: 'completionDate',
     type: 'date',
     label: 'Data ukończenia',
