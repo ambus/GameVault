@@ -8,6 +8,7 @@ import {
   getYearMonthKey,
   parseIsoDateToLocalDate,
 } from '../../../core/utils/date.utils';
+import { PricePrivacyService } from '../../../core/privacy/price-privacy.service';
 import { GamesStore } from '../../games/games.store';
 import { Game } from '../../games/games.types';
 
@@ -33,6 +34,7 @@ interface PeriodGroup {
 })
 export class AnalysisRatioComponent {
   private readonly store = inject(GamesStore);
+  protected readonly pricePrivacy = inject(PricePrivacyService);
 
   readonly viewMode = signal<RatioViewMode>('monthly');
   readonly selectedPeriodKey = signal<string | null>(null);

@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { ActiveElement, ChartEvent } from 'chart.js';
 import { ChartModule } from 'primeng/chart';
 import { TableModule } from 'primeng/table';
+import { PricePrivacyService } from '../../../core/privacy/price-privacy.service';
 import { getYearMonthKey, parseIsoDateToLocalDate } from '../../../core/utils/date.utils';
 import { GamesStore } from '../../games/games.store';
 
@@ -41,7 +42,7 @@ import { GamesStore } from '../../games/games.store';
                 <td>{{ game.name }}</td>
                 <td>{{ game.platform }}</td>
                 <td class="text-right">
-                  {{ game.purchasePrice | currency: 'PLN' : 'symbol' : '1.2-2' }}
+                  {{ pricePrivacy.mask(game.purchasePrice) | currency: 'PLN' : 'symbol' : '1.2-2' }}
                 </td>
               </tr>
             </ng-template>
@@ -124,6 +125,7 @@ import { GamesStore } from '../../games/games.store';
 })
 export class AnalysisExpensesComponent {
   private readonly store = inject(GamesStore);
+  protected readonly pricePrivacy = inject(PricePrivacyService);
 
   // Track selected month for details view
   readonly selectedMonth = signal<string | null>(null);
@@ -137,7 +139,7 @@ export class AnalysisExpensesComponent {
       // Skip if no price or not purchased
       if (!game['purchasePrice'] || !game['purchaseDate']) return;
 
-      const price = Number(game['purchasePrice']);
+      const price = Number(this.pricePrivacy.mask(game['purchasePrice']));
       if (isNaN(price)) return;
 
       const key = getYearMonthKey(game['purchaseDate']);

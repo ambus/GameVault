@@ -5,6 +5,7 @@ import {
   effect,
   inject,
   signal,
+  untracked,
   viewChild
 } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -12,6 +13,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
+import { PricePrivacyService } from '../../../core/privacy/price-privacy.service';
 import { DynamicFormComponent } from '../../shared/dynamic-form/dynamic-form.component';
 import { GamesStore } from '../games.store';
 import { Game } from '../games.types';
@@ -32,6 +34,7 @@ export class GameFormComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
+  private readonly pricePrivacy = inject(PricePrivacyService);
 
   readonly fields = GAME_FORM_FIELDS;
   readonly editingId = signal<string | null>(null);
@@ -46,7 +49,11 @@ export class GameFormComponent {
     const id = this.editingId();
     if (id) {
       const game = this.store.selectedGame();
-      return game ? { ...game } : {};
+      if (!game) return {};
+      // Maskowanie tylko przy ładowaniu — późniejsze przełączenia obsługuje efekt w konstruktorze,
+      // żeby nie nadpisywać pozostałych edytowanych pól formularza
+      const purchasePrice = untracked(() => this.pricePrivacy.mask(game.purchasePrice));
+      return { ...game, purchasePrice };
     }
     return this.prefilledData() || {};
   });
@@ -85,6 +92,15 @@ export class GameFormComponent {
       this.store.select(null);
     }
 
+    // Odsłonięcie / ukrycie ceny w otwartym formularzu, o ile użytkownik jej nie edytował
+    effect(() => {
+      const revealed = this.pricePrivacy.pricesRevealed();
+      const control = this.dynamicForm()?.form?.get('purchasePrice');
+      const originalPrice = untracked(() => this.store.selectedGame())?.purchasePrice;
+      if (!this.editingId() || !control || control.dirty || originalPrice == null) return;
+      control.setValue(revealed ? originalPrice : 0);
+    });
+
     // Reaguj na zmiany editingId i czyszcz selectedId gdy nie ma ID
     effect(() => {
       const currentId = this.editingId();
@@ -100,6 +116,11 @@ export class GameFormComponent {
       ...value,
       id: id || ''
     } as Game;
+
+    // Zamaskowana (0 zł) cena nie może nadpisać prawdziwej, jeśli użytkownik jej nie zmienił
+    if (id && !this.dynamicForm()?.isFieldDirty('purchasePrice')) {
+      game.purchasePrice = this.store.selectedGame()?.purchasePrice;
+    }
     this.store.upsert(game);
 
     const wishlistId = this.wishlistIdToRemove();

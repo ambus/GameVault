@@ -45,6 +45,8 @@
   font-weight: 400;
   color: var(--color-dark-text);
   letter-spacing: 0;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .search-input {

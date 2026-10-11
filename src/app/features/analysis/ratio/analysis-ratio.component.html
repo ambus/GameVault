@@ -237,7 +237,7 @@
                       <td>{{ game.platform || '-' }}</td>
                       <td class="text-right">
                         @if (game.purchasePrice !== undefined && game.purchasePrice !== null) {
-                          {{ game.purchasePrice | currency: 'PLN' : 'symbol' : '1.2-2' }}
+                          {{ pricePrivacy.mask(game.purchasePrice) | currency: 'PLN' : 'symbol' : '1.2-2' }}
                         } @else {
                           -
                         }

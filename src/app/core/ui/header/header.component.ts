@@ -7,6 +7,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { filter, map } from 'rxjs';
 import { GamesStore } from '../../../features/games/games.store';
 import { AuthService } from '../../auth/auth.service';
+import { PricePrivacyService } from '../../privacy/price-privacy.service';
 
 @Component({
   standalone: true,
@@ -20,6 +21,7 @@ export class HeaderComponent {
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
   private readonly gamesStore = inject(GamesStore);
+  private readonly pricePrivacy = inject(PricePrivacyService);
 
   menuToggle = output<void>();
   isDarkMode = signal(true);
@@ -41,6 +43,11 @@ export class HeaderComponent {
     // Wyłącz wyszukiwanie na stronach formularza (new lub :id)
     return url?.includes('/games/new') || /\/games\/[^/]+$/.test(url || '');
   });
+
+  // Ukryty przełącznik: kliknięcie tytułu odsłania / ukrywa prawdziwe ceny
+  onTitleClick(): void {
+    this.pricePrivacy.toggle();
+  }
 
   onMenuClick(): void {
     this.menuToggle.emit();
